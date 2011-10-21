@@ -63,6 +63,7 @@ int cin_eol(){
 class bad_input{};
 class divide_zero{};
 class grammar_error{};
+class no_such_pos{};
 
 static const double pres = 1e-7;
 

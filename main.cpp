@@ -9,5 +9,17 @@ using namespace std;
 
 int main(){
     //tkin = new token_stream();
+    grammar instance;
+    instance.debug = 0;
+    instance.tkin.debug = 0;
+    try{
+            cout << instance.run()<<endl;
+    }
+    catch(divide_zero){
+        cout<<"divided by zero!"<<endl;
+    }
+    catch(...){
+        cout<<"input error!"<<endl;
+    }
 }
 

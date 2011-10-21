@@ -12,21 +12,31 @@ class token_stream{
 		//int r2l_size(){return r2l.size();};
         void l_forward(){++l2r_pos;}
         void l_backward(){--l2r_pos;}
-        const stream_content_type &data(){return l2r;}
+        stream_content_type &data(){return l2r;}
 
 		void init();
 		int eol();
 		void push_element(token_type);
+
+		int debug ;
+		void print_l2r();
 	protected:
 		stream_content_type l2r ;//, r2l ;
 		int l2r_pos ,  r2l_pos ;
 	private:
+        //string raw;
 
 };
 	int 	token_stream :: eol(){
 		if ((unsigned)l2r_pos==l2r.size()-1)return 1;
 			else return 0;
 	}
+	void token_stream :: print_l2r(){
+            stream_content_type_iter  it;
+            for (it=l2r.begin();it!=l2r.end();++it)
+                cout<<(*it).first<<" "<<(*it).second<<"\n";
+            cout<<endl;
+		}
     void token_stream :: push_element(token_type x){
         l2r.push_back(x);
         //++l2r_pos;
@@ -36,12 +46,14 @@ class token_stream{
         double double_tmp;
 
 		while(!cin_eol()){
+            dispose_space();
             x = cin.get();
+            //if (cin>>x){}else throw bad_input();
             if (isdigit(x)){
                 cin.putback(x);
                 if (!(cin>>double_tmp))
                     throw bad_input();
-                push_element(make_pair(_number_type,x));
+                push_element(make_pair(_number_type,double_tmp));
             }
             else if (isalpha(x)){
                 cin.putback(x);
@@ -64,7 +76,7 @@ class token_stream{
         for (it--;it>=l2r.begin();--it){
             r2l.push_back(*it);
         }*/
-
+        if (debug)print_l2r();
 	}
 	token_type token_stream :: get_token(){
         return l2r[l2r_pos++];

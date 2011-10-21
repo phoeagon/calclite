@@ -3,19 +3,22 @@ class grammar{
         double expression(int l,int r);
         double term(int l,int r);
         double primary(int l,int r);
-        double get_result();
+        double run();
         token_stream tkin;
+        int debug;
     private:
         int opr_right_pos(int l,int r,char* pattern);
         int opr_left_pos(int l,int r,char* pattern);
 };
-double grammar :: get_result(){
+double grammar :: run(){
+    tkin.init();
     return expression(0,tkin.data().size()-1);
 }
 double grammar :: expression(int l,int r){
+    if (debug)cout<<"expression:"<<l<<" "<<r<<endl;
     if (l>r)throw grammar_error();
     try{
-        int q = opr_right_pos(l,r,"+-");
+        int q = opr_right_pos(l+1,r,"+-");
         char tmp = tkin.data()[q].second;
         switch(tmp){
             case '+':
@@ -24,15 +27,16 @@ double grammar :: expression(int l,int r){
                 return expression(l,q-1)-term(q+1,r);
             default : throw grammar_error();
         }
-    }catch(...){
+    }catch(no_such_pos){
         return term(l,r);
     }
 }
 double grammar :: term(int l,int r){
+    if (debug)cout<<"term:"<<l<<" "<<r<<endl;
     if (l>r)throw grammar_error();
 
     try{
-        int q = opr_right_pos(l,r,"*/%");
+        int q = opr_right_pos(l+1,r,"*/%");
 
         char tmp = tkin.data()[q].second;
 
@@ -46,11 +50,12 @@ double grammar :: term(int l,int r){
             //to do here
             return 0;
         }
-    }catch(...){
+    }catch(no_such_pos){
         return primary(l,r);
     }
 }
 double grammar :: primary(int l,int r){
+    if (debug)cout<<"primary:"<<l<<" "<<r<<endl;
     if (l>r)throw grammar_error();
 
     token_type head = tkin.data()[l];
@@ -66,7 +71,7 @@ double grammar :: primary(int l,int r){
         if (r-l-1<=0)throw grammar_error();
         if ((int)(head.second)!='('||(int)(tail.second)!=')')
             throw grammar_error();
-        return expression(l+1,r+1);
+        return expression(l+1,r-1);
     }
     else if(head.first==_opr_type){
         switch((int)(head.second)){
@@ -85,7 +90,7 @@ double grammar :: primary(int l,int r){
  some functions
 */
 int grammar :: opr_left_pos(int l,int r, char* pattern){
-    int j;
+   /* int j;
     int ct = strlen(pattern);
 
     while (r>=l){
@@ -95,19 +100,28 @@ int grammar :: opr_left_pos(int l,int r, char* pattern){
             return l;
         ++l;
     }
-    throw grammar_error();
+    throw grammar_error();*/
 }
 int grammar :: opr_right_pos(int l,int r,char* pattern){
+    if (l>r)throw no_such_pos();
+    int brk_dep = 0;
     int j;
     int ct = strlen(pattern);
 
     while (r>=l){
-        for (j=0;j<ct;++j)
-            if (tkin.data()[r].first==_opr_type &&
-                (char)(tkin.data()[r].second)==pattern[j])
+        for (j=0;j<ct;++j){
+            token_type tmp = tkin.data()[r];
+            if (tmp.first==_brk_type){
+                if (tmp.second==')')++brk_dep;
+                else //if (tmp.second=='(')
+                    --brk_dep;
+            }
+            if (!brk_dep && tmp.first==_opr_type &&
+                (char)(tmp.second)==pattern[j])
             return r;
+        }
         --r;
     }
-    throw grammar_error();
+    throw no_such_pos();
 
 }
