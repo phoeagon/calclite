@@ -1,6 +1,13 @@
-#include "calc.h"
+#include <iostream>
 using namespace std;
 
-int main(){
+#include "calc.h"
+#include "token_stream_class.h"
 
+
+#include "grammer.h"
+
+int main(){
+    //tkin = new token_stream();
 }
+
