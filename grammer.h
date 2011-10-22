@@ -1,12 +1,14 @@
 class grammar{
     public:
-        void set_debug(int x){debug = x;}
-        void set_warning(int x){warning = x;}
-        double run();
+
         token_stream tkin;
+        void set_debug(int x){tkin.var_data.memory[tkin.var_data.get_var_pos("_debug")]=x;}
+        void set_warning(int x){tkin.var_data.memory[tkin.var_data.get_var_pos("_warning")]=x;}
+        double run();
     private:
-        int debug;
-        int warning;
+		int debug(){return tkin.var_data.memory[tkin.var_data.get_var_pos("_debug")];} ;
+        int warning(){return tkin.var_data.memory[tkin.var_data.get_var_pos("_warning")];} ;
+
         double statement(int l,int r);
         double expression(int l,int r);
         double term(int l,int r);
@@ -15,7 +17,7 @@ class grammar{
         int opr_left_pos(int l,int r,char* pattern);
 };
 double grammar :: statement(int l,int r){
-    if (debug)cerr<<"statement: "<<l<<" "<<r<<endl;
+    if (debug())cerr<<"statement: "<<l<<" "<<r<<endl;
     if (l>r)throw grammar_error();
     token_type dt = tkin.data()[l+1];
     if (dt.first==_assign_type){
@@ -40,7 +42,7 @@ double grammar :: run(){
     return statement(0,tkin.data().size()-1);
 }
 double grammar :: expression(int l,int r){
-    if (debug)cerr<<"expression:"<<l<<" "<<r<<endl;
+    if (debug())cerr<<"expression:"<<l<<" "<<r<<endl;
     if (l>r)throw grammar_error();
     try{
         int q = opr_right_pos(l+1,r,"+-");
@@ -58,7 +60,7 @@ double grammar :: expression(int l,int r){
     }
 }
 double grammar :: term(int l,int r){
-    if (debug)cerr<<"term:"<<l<<" "<<r<<endl;
+    if (debug())cerr<<"term:"<<l<<" "<<r<<endl;
     if (l>r)throw grammar_error();
 
     try{
@@ -86,20 +88,20 @@ double grammar :: term(int l,int r){
     }
 }
 double grammar :: primary(int l,int r){
-    if (debug)cerr<<"primary:"<<l<<" "<<r<<endl;
+    if (debug())cerr<<"primary:"<<l<<" "<<r<<endl;
     if (l>r)throw grammar_error();
 
     token_type head = tkin.data()[l];
     token_type tail = tkin.data()[r];
 
     if(head.first==_var_type){
-        if (debug){
+        if (debug()){
             cerr<<"memory size:"<<tkin.var_data.memory.size()<<endl;
             cerr<<"at memory: "<<head.second<<endl;
         }
 
         if(head.second<tkin.var_data.memory.size()){
-            if (warning && tkin.var_data.memory_init[(int)head.second]==0)
+            if (warning() && tkin.var_data.memory_init[(int)head.second]==0)
                 cout<<"Warning: uninitialized variable detected! zeroed it by default!"<<endl;
             return tkin.var_data.memory.at((int)head.second);
         }

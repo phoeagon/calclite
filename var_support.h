@@ -4,6 +4,7 @@ typedef var_cast :: iterator var_cast_it;
 typedef vector<bool> memory_init_table;
 
 class variables{
+    friend class token_stream;
     public:
         var_cast        var_table;
         memory_table    memory;
@@ -14,6 +15,7 @@ class variables{
         void del_var(string);
         int eval_var(string ind , double val);
         const string cin_get_var_name();
+        void init_system_var();
 };
 
 double variables::get_var_pos(string a){
@@ -47,10 +49,11 @@ int variables :: eval_var(string ind , double val){
 }
 const string variables :: cin_get_var_name(){
     string value ;
-    char x = 0;
-    if (isalpha(cin.peek())){
+    char x = cin.peek();
+    if (isalpha(x) || x=='_' ){
         while(cin){
-            if (!(cin>>x))throw bad_input();
+            dispose_space();
+            x=cin.get();
             if (isdigit(x) || isalpha(x) || x=='_')
                 value += x;
             else {
@@ -62,4 +65,16 @@ const string variables :: cin_get_var_name(){
     if (value.size())
         return value;
     else throw bad_input();
+}
+
+void variables :: init_system_var(){
+    try{
+        memory_init[add_var("_debug",1)]=1;
+        memory_init[add_var("_warning",1)]=1;
+        memory_init[add_var("_e",2.718281828459045f)]=1;
+        memory_init[add_var("_pi",3.141592653589793f)]=1;
+        memory_init[add_var("_phi", 1.618033988749895f)]=1;
+    }catch(duplicate_def){
+        throw init_error();
+    }
 }

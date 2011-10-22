@@ -10,4 +10,5 @@ int print_help(){
     cout<<"[other operators: +-*/%]"<<endl;
     cout<<"[define a variable]\n a : 2+4\n  [all uninitialized variables equal 0]\n"<<endl;
     cout<<"[to exit] '#' "<<endl;
+    cout<<"[ warning messages, set '_debug' to 0/1 will do.] _debug : 0\n"<<endl;
 }

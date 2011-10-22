@@ -41,8 +41,13 @@ void empty_cin_buffer(){
 		if (x==10 || x==13)break;
 }
 
+int cin_eol(){
+    char x = cin.peek();
+    return (x==10 || x==13);
+}
 void find_next_element(int value){
 	char x;
+	if (cin_eol())return;
 	while (cin){
         x=cin.get();
 		if (isspace(x)==value){
@@ -57,10 +62,6 @@ void jump_to_space(){
 void dispose_space(){
     find_next_element(0);
 }
-int cin_eol(){
-    char x = cin.peek();
-    return (x==10 || x==13);
-}
 
 class bad_input{};
 class divide_zero{};
@@ -73,6 +74,8 @@ class var_def_ok{};
 class user_exit{};
 class help_info{};
 class assign_error{};
+class init_error{};
+
 static const double pres = 1e-7;
 
 int equal(double a,double b){

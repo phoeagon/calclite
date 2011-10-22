@@ -15,12 +15,19 @@ int main(){
     print_welcome();
 
     grammar instance;
+    instance.tkin.var_data.init_system_var();
+
     instance.set_debug(0);
     instance.set_warning(1);
     instance.tkin.set_debug(0);
+
     while (1){
         try{
                 cout << instance.run()<<endl;
+        }
+        catch(init_error){
+            cout<<"system initialization error!"<<endl;
+            cout<<"some parts may not work, use '#' to exit."<<endl;
         }
         catch(assign_error){
             cout<<"assignment statement must have a variable as left value"<<endl;

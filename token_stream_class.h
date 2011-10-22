@@ -3,6 +3,8 @@
 
 
 class token_stream{
+    friend class variables;
+
 	public:
 //		token_stream():
 //			l2r_pos(0),r2l_pos(0) {}
@@ -15,7 +17,7 @@ class token_stream{
         stream_content_type &data(){return l2r;}
 
 		void init();
-        void set_debug(int x){debug = x;}
+        void set_debug(int x){var_data.memory[var_data.get_var_pos("_debug")]=x;}
 		void print_l2r();
 
 
@@ -25,7 +27,7 @@ class token_stream{
 		stream_content_type l2r ;//, r2l ;
 		int l2r_pos ,  r2l_pos ;
 	private:
-		int debug ;
+		int debug(){return var_data.memory[var_data.get_var_pos("_debug")];} ;
         void scan();
 		int eol();
 		void push_element(token_type);
@@ -47,7 +49,7 @@ class token_stream{
         //++l2r_pos;
     }
 	void token_stream :: init(){
-        if (debug)cerr<<"token_stream :: init()";
+        if (debug())cerr<<"token_stream :: init()";
         l2r_pos = 0;
         r2l_pos = 0;
         l2r.clear();
@@ -68,10 +70,10 @@ class token_stream{
                     throw bad_input();
                 push_element(make_pair(_number_type,double_tmp));
             }
-            else if (isalpha(x)){
+            else if (isalpha(x) || x=='_'){
                 cin.putback(x);
                 string indtf = var_data.cin_get_var_name();
-                if (debug)cerr<<"[indentifier: ] "<<indtf<<endl;
+                if (debug())cerr<<"[indentifier: ] "<<indtf<<endl;
                 int pos;
 
                 try{
@@ -103,7 +105,7 @@ class token_stream{
         for (it--;it>=l2r.begin();--it){
             r2l.push_back(*it);
         }*/
-        if (debug)print_l2r();
+        if (debug())print_l2r();
 	}
 	token_type token_stream :: get_token(){
         return l2r[l2r_pos++];
