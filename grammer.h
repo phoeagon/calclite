@@ -12,6 +12,9 @@ class grammar{
         double statement(int l,int r);
         double expression(int l,int r);
         double term(int l,int r);
+        double fact(int l,int r);
+        double fact2(int l,int r);
+        double high_pri_left_assoc(int l,int r);
         double primary(int l,int r);
         int opr_right_pos(int l,int r,char* pattern);
         int opr_left_pos(int l,int r,char* pattern);
@@ -73,14 +76,14 @@ double grammar :: term(int l,int r){
 
         char tmp = tkin.data()[q].second;
 
-        if (tmp=='*')return term(l,q-1)*primary(q+1,r);
+        if (tmp=='*')return term(l,q-1)*fact(q+1,r);
         else if (tmp=='/'){
-            double divisor = primary(q+1,r);
+            double divisor = fact(q+1,r);
             if (equal(0.0,divisor))throw divide_zero();
             return term(l,q-1)/divisor;
         }
         else if (tmp=='%'){
-            double num2 = primary(q+1,r);
+            double num2 = fact(q+1,r);
             double num1 = term(l,q-1);
             if (equal(num2,0))throw divide_zero();
             if (iswhole(num1) && iswhole(num2))
@@ -89,8 +92,41 @@ double grammar :: term(int l,int r){
             return 0;
         }
     }catch(no_such_pos){
+        return fact(l,r);
+    }
+}
+double grammar :: fact(int l,int r){
+    if (debug())cerr<<"fact:"<<l<<" "<<r<<endl;
+    if (l>r)throw grammar_error();
+    try{
+        int q = opr_left_pos(l,r-1,"^");
+
+        //note that power right associates
+        double base = fact2(l,q-1);
+        double tt = fact(q+1,r);
+        return pow(base,tt);
+    }catch(no_such_pos){
+        return fact2(l,r);
+    }
+}
+double grammar :: fact2(int l,int r){
+    //this deals with left associative operations with high priority "!"
+    if (debug())cerr<<"fact2:"<<l<<" "<<r<<endl;
+    if (l>r)throw grammar_error();
+    try{
+        int pos = opr_right_pos(l+1,r,"!");
+        if (pos!=r)throw no_such_pos();
+
+        double base = fact2(l,r-1);
+        if (!iswhole(base))throw fact_error();
+        int ans = 1;
+        for (int i=base;i>1;--i)ans*=i;
+        return ans;
+
+    }catch(no_such_pos){
         return primary(l,r);
     }
+
 }
 double grammar :: primary(int l,int r){
     if (debug())cerr<<"primary:"<<l<<" "<<r<<endl;
@@ -120,16 +156,19 @@ double grammar :: primary(int l,int r){
     }
     else if(head.first==_brk_type && tail.first==_brk_type){
         if (r-l-1<=0)throw grammar_error();
-        if ((int)(head.second)!='('||(int)(tail.second)!=')')
-            throw grammar_error();
-        return expression(l+1,r-1);
+        if ((int)(head.second)=='(' && (int)(tail.second)==')')
+            return expression(l+1,r-1);
+        else if((int)(head.second)=='|' && (int)(tail.second)=='|')
+            return abs(expression(l+1,r-1));
+        throw grammar_error();
     }
     else if(head.first==_opr_type){
         switch((int)(head.second)){
             case '+':return primary(l+1,r);
             case '-':return -primary(l+1,r);
-            default :throw grammar_error();
+            default :break;
         }
+        throw grammar_error();
     }
     else throw grammar_error();
 }
@@ -141,43 +180,51 @@ double grammar :: primary(int l,int r){
  some functions
 */
 int grammar :: opr_left_pos(int l,int r, char* pattern){
-/*    if (l>r)throw no_such_pos();
+    if (l>r)throw no_such_pos();
     int brk_dep = 0;
     int j;
     int ct = strlen(pattern);
+    int abs_dep = 0;
 
     while (r>=l){
-        for (j=0;j<ct;++j){
             token_type tmp = tkin.data()[l];
             if (tmp.first==_brk_type){
                 if (tmp.second==')')++brk_dep;
-                else //if (tmp.second=='(')
+                else if (tmp.second=='(')
                     --brk_dep;
+                else if (tmp.second=='|')
+                    abs_dep = 1-abs_dep;
             }
-            if (!brk_dep && tmp.first==_opr_type &&
+
+        for (j=0;j<ct;++j){
+            if (!brk_dep && !abs_dep && tmp.first==_opr_type &&
                 (char)(tmp.second)==pattern[j])
             return l;
         }
         ++l;
     }
     throw no_such_pos();
-*/
+
 }
 int grammar :: opr_right_pos(int l,int r,char* pattern){
     if (l>r)throw no_such_pos();
     int brk_dep = 0;
     int j;
     int ct = strlen(pattern);
+    int abs_dep = 0;
 
     while (r>=l){
-        for (j=0;j<ct;++j){
             token_type tmp = tkin.data()[r];
             if (tmp.first==_brk_type){
                 if (tmp.second==')')++brk_dep;
-                else //if (tmp.second=='(')
+                else if (tmp.second=='(')
                     --brk_dep;
+                else if (tmp.second=='|')
+                    abs_dep = 1-abs_dep;
             }
-            if (!brk_dep && tmp.first==_opr_type &&
+
+        for (j=0;j<ct;++j){
+            if (!brk_dep && !abs_dep && tmp.first==_opr_type &&
                 (char)(tmp.second)==pattern[j])
             return r;
         }

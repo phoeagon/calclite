@@ -87,8 +87,9 @@ class token_stream{
             else{
                 switch(x){
                     case '+':case '-':case '*':case '/':case '%':
+                    case '^':case '!':
                         push_element(make_pair(_opr_type,x));break;
-                    case '(':case ')':
+                    case '(':case ')':case '|':
                         push_element(make_pair(_brk_type,x));break;
                     case '#':case '?':
                         push_element(make_pair(_cmd_type,x));break;

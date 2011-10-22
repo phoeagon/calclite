@@ -75,6 +75,7 @@ class user_exit{};
 class help_info{};
 class assign_error{};
 class init_error{};
+class fact_error{};
 
 static const double pres = 1e-7;
 

@@ -51,10 +51,12 @@ int main(){
         catch(no_such_var){
             cout<<"no defined var found!"<<endl;
         }
+        catch(fact_error){
+            cout<<"n! requires n to be integer"<<endl;
+        }
         catch(...){
             cout<<"input error!"<<endl;
         }
-
             empty_cin_buffer();
     }
 }
