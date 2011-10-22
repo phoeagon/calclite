@@ -65,7 +65,10 @@ double grammar :: primary(int l,int r){
     token_type head = tkin.data()[l];
     token_type tail = tkin.data()[r];
 
-    if (head.first==_number_type){
+    if(head.first==_var_type){
+        return tkin.var_data.memory[(int)head.second];
+    }
+    else if (head.first==_number_type){
         if (l!=r)
             throw grammar_error();
 

@@ -15,15 +15,20 @@ class token_stream{
         stream_content_type &data(){return l2r;}
 
 		void init();
-		int eol();
-		void push_element(token_type);
 
 		int debug ;
 		void print_l2r();
+
+
+
 	protected:
+        variables var_data;
 		stream_content_type l2r ;//, r2l ;
 		int l2r_pos ,  r2l_pos ;
 	private:
+        void scan();
+		int eol();
+		void push_element(token_type);
         //string raw;
 
 };
@@ -42,6 +47,12 @@ class token_stream{
         //++l2r_pos;
     }
 	void token_stream :: init(){
+        l2r_pos = 0;
+        r2l_pos = 0;
+        l2r.clear();
+        scan();
+	}
+    void token_stream :: scan(){
 		char x;
         double double_tmp;
 
@@ -57,6 +68,11 @@ class token_stream{
             }
             else if (isalpha(x)){
                 cin.putback(x);
+                string indtf = var_data.cin_get_var_name();
+                int pos;
+
+                pos = var_data.get_var(indtf);
+                push_element(make_pair(_var_type,pos));
                 //to be done here about variables
             }
             else{

@@ -67,6 +67,7 @@ class no_such_pos{};
 class modulus_error{};
 class no_such_var{};
 class duplicate_def{};
+class var_def_ok{};
 
 static const double pres = 1e-7;
 
