@@ -43,7 +43,7 @@ int main(){
             //everything's fine but we print promt that a new different message
         }
         catch(divide_zero){
-            cout<<"divided by zero!"<<endl;
+            cout<<"divided/mod by zero!"<<endl;
         }
         catch(modulus_error){
             cout<<"modulus operations works on integers only!"<<endl;

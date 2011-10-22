@@ -23,8 +23,12 @@ double grammar :: statement(int l,int r){
     if (dt.first==_assign_type){
         if (tkin.data()[l].first!=_var_type)throw assign_error();
         int pos = tkin.data()[l].second;
+
+        double rvalue = expression(l+2,r);
         tkin.var_data.memory_init[pos]  = 1;
-        return tkin.var_data.memory[pos] = expression(l+2,r);
+            //must set after calculation is done
+            // just in case that error occur but left value is set to be initlized
+        return tkin.var_data.memory[pos] = rvalue;
     }
     return expression(l,r);
 }
@@ -78,6 +82,7 @@ double grammar :: term(int l,int r){
         else if (tmp=='%'){
             double num2 = primary(q+1,r);
             double num1 = term(l,q-1);
+            if (equal(num2,0))throw divide_zero();
             if (iswhole(num1) && iswhole(num2))
                 return (int)num1%(int)num2;
             else throw modulus_error();
