@@ -15,17 +15,17 @@ class token_stream{
         stream_content_type &data(){return l2r;}
 
 		void init();
-
-		int debug ;
+        void set_debug(int x){debug = x;}
 		void print_l2r();
 
 
+        variables var_data;
 
 	protected:
-        variables var_data;
 		stream_content_type l2r ;//, r2l ;
 		int l2r_pos ,  r2l_pos ;
 	private:
+		int debug ;
         void scan();
 		int eol();
 		void push_element(token_type);
@@ -39,17 +39,19 @@ class token_stream{
 	void token_stream :: print_l2r(){
             stream_content_type_iter  it;
             for (it=l2r.begin();it!=l2r.end();++it)
-                cout<<(*it).first<<" "<<(*it).second<<"\n";
-            cout<<endl;
+                cerr<<(*it).first<<" "<<(*it).second<<"\n";
+            cerr<<endl;
 		}
     void token_stream :: push_element(token_type x){
         l2r.push_back(x);
         //++l2r_pos;
     }
 	void token_stream :: init(){
+        if (debug)cerr<<"token_stream :: init()";
         l2r_pos = 0;
         r2l_pos = 0;
         l2r.clear();
+        cout<<"> "<<flush;
         scan();
 	}
     void token_stream :: scan(){
@@ -69,9 +71,14 @@ class token_stream{
             else if (isalpha(x)){
                 cin.putback(x);
                 string indtf = var_data.cin_get_var_name();
+                if (debug)cerr<<"[indentifier: ] "<<indtf<<endl;
                 int pos;
 
-                pos = var_data.get_var(indtf);
+                try{
+                    pos = var_data.get_var_pos(indtf);
+                }catch(no_such_var){
+                    pos = var_data.add_var(indtf,0);
+                }
                 push_element(make_pair(_var_type,pos));
                 //to be done here about variables
             }
@@ -81,6 +88,10 @@ class token_stream{
                         push_element(make_pair(_opr_type,x));break;
                     case '(':case ')':
                         push_element(make_pair(_brk_type,x));break;
+                    case '#':case '?':
+                        push_element(make_pair(_cmd_type,x));break;
+                    case ':':
+                        push_element(make_pair(_assign_type,x));break;
                     default:
                         throw bad_input();
                 }

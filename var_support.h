@@ -1,23 +1,25 @@
 typedef vector<double> memory_table;
 typedef map<string,int> var_cast;
 typedef var_cast :: iterator var_cast_it;
-typedef vector<string> _revers;
+typedef vector<bool> memory_init_table;
 
 class variables{
     public:
         var_cast        var_table;
         memory_table    memory;
-        double get_var(string a);
+        memory_init_table memory_init;
+
+        double get_var_pos(string a);
         int add_var(string,double);
         void del_var(string);
         int eval_var(string ind , double val);
         const string cin_get_var_name();
 };
 
-double variables::get_var(string a){
+double variables::get_var_pos(string a){
     var_cast_it it ;
     it = var_table.find(a);
-    if (it!=var_table.end())return memory.at((*it).second);
+    if (it!=var_table.end())return (*it).second;
         else throw no_such_var();
 }
 int variables :: add_var(string ind , double val){
@@ -25,6 +27,7 @@ int variables :: add_var(string ind , double val){
         throw duplicate_def();
 
     memory.push_back(val);
+    memory_init.push_back(0);
     return var_table[ind] = memory.size()-1;
 }
 void variables :: del_var(string ind){

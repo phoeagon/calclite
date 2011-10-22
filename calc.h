@@ -24,6 +24,8 @@ static const int _var_type = 1;
 static const int _opr_type = 2;
 static const int _func_type = 3;
 static const int _brk_type = 4; //bracket
+static const int _cmd_type = 5;
+static const int _assign_type = 6;
 
 void init_random(){
 	srand(time(NULL));
@@ -35,7 +37,7 @@ typedef stream_content_type :: iterator  stream_content_type_iter;
 void empty_cin_buffer(){
 	cin.clear();
 	char x;
-	while (cin>>x)
+	while (x=cin.get())
 		if (x==10 || x==13)break;
 }
 
@@ -68,7 +70,9 @@ class modulus_error{};
 class no_such_var{};
 class duplicate_def{};
 class var_def_ok{};
-
+class user_exit{};
+class help_info{};
+class assign_error{};
 static const double pres = 1e-7;
 
 int equal(double a,double b){
