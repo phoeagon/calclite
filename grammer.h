@@ -1,12 +1,12 @@
 class grammar{
     public:
+        double run();
+        int debug;
+        token_stream tkin;
+    private:
         double expression(int l,int r);
         double term(int l,int r);
         double primary(int l,int r);
-        double run();
-        token_stream tkin;
-        int debug;
-    private:
         int opr_right_pos(int l,int r,char* pattern);
         int opr_left_pos(int l,int r,char* pattern);
 };
@@ -47,7 +47,11 @@ double grammar :: term(int l,int r){
             return term(l,q-1)/divisor;
         }
         else if (tmp=='%'){
-            //to do here
+            double num2 = primary(q+1,r);
+            double num1 = term(l,q-1);
+            if (iswhole(num1) && iswhole(num2))
+                return (int)num1%(int)num2;
+            else throw modulus_error();
             return 0;
         }
     }catch(no_such_pos){

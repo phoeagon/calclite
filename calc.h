@@ -64,6 +64,9 @@ class bad_input{};
 class divide_zero{};
 class grammar_error{};
 class no_such_pos{};
+class modulus_error{};
+class no_such_var{};
+class duplicate_def{};
 
 static const double pres = 1e-7;
 
@@ -71,4 +74,6 @@ int equal(double a,double b){
     return (abs(a-b)<1e-7);
 }
 
-
+int iswhole(double a){
+    return (abs(a-(int)a)<1e-7);
+}

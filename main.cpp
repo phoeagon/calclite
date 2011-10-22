@@ -6,6 +6,7 @@ using namespace std;
 
 
 #include "grammer.h"
+#include "var_support.h"
 
 int main(){
     //tkin = new token_stream();
@@ -17,6 +18,9 @@ int main(){
     }
     catch(divide_zero){
         cout<<"divided by zero!"<<endl;
+    }
+    catch(modulus_error){
+        cout<<"modulus operations works on integers only!";
     }
     catch(...){
         cout<<"input error!"<<endl;
