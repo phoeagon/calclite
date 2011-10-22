@@ -52,7 +52,7 @@ int main(){
             cout<<"no defined var found!"<<endl;
         }
         catch(fact_error){
-            cout<<"n! requires n to be integer"<<endl;
+            cout<<"n! requires n to be positive integer"<<endl;
         }
         catch(...){
             cout<<"input error!"<<endl;

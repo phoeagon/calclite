@@ -52,14 +52,16 @@ double grammar :: expression(int l,int r){
     if (debug())cerr<<"expression:"<<l<<" "<<r<<endl;
     if (l>r)throw grammar_error();
     try{
-        int q = opr_right_pos(l+1,r,"+-");
+        int q = opr_right_pos(l,r,"+-");
         //note that "+-" has left associativity
         char tmp = tkin.data()[q].second;
         switch(tmp){
             case '+':
-                return expression(l,q-1)+term(q+1,r);
+                if (q-l)return expression(l,q-1)+term(q+1,r);
+                    else return term(q+1,r);
             case '-':
-                return expression(l,q-1)-term(q+1,r);
+                if (q-l)return expression(l,q-1)-term(q+1,r);
+                    else return -term(q+1,r);
             default : throw grammar_error();
         }
     }catch(no_such_pos){
@@ -118,7 +120,7 @@ double grammar :: fact2(int l,int r){
         if (pos!=r)throw no_such_pos();
 
         double base = fact2(l,r-1);
-        if (!iswhole(base))throw fact_error();
+        if (!iswhole(base) || base<0)throw fact_error();
         int ans = 1;
         for (int i=base;i>1;--i)ans*=i;
         return ans;
@@ -162,14 +164,14 @@ double grammar :: primary(int l,int r){
             return abs(expression(l+1,r-1));
         throw grammar_error();
     }
-    else if(head.first==_opr_type){
+    /*else if(head.first==_opr_type){
         switch((int)(head.second)){
             case '+':return primary(l+1,r);
             case '-':return -primary(l+1,r);
             default :break;
         }
         throw grammar_error();
-    }
+    }*/
     else throw grammar_error();
 }
 

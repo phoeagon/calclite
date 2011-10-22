@@ -13,5 +13,7 @@ int print_help(){
     cout<<"[    and will cause a warning by default]\n";
     cout<<"[system variable: _pi, _e, _phi ]\n//you can edit them but it's not recommended!\n";
     cout<<"[to exit] '#' "<<endl;
-    cout<<"[ warning messages, set '_debug' to 0/1 will do.] _debug : 0\n"<<endl;
+    cout<<"[ warning messages, set '_debug' to 0/1 will do.] _debug : 0\n";
+    cout<<"[note that '5*-2' is not allowed ]";
+    cout<<endl;
 }
