@@ -129,7 +129,9 @@ double grammar :: exp_and_pow(int l,int r){
         //note that power right associates
         double base = factorial(l,q-1);
         double tt = exp_and_pow(q+1,r);
-        return pow(base,tt);
+        double x = pow(base,tt);
+        if (!isnan(x))return x;//if x is not Nan
+            else throw exp_undef();
     }catch(no_such_pos){
         return factorial(l,r);
     }

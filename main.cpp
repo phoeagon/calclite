@@ -32,6 +32,9 @@ int main(){
         catch(assign_error){
             cout<<"assignment statement must have a variable as left value"<<endl;
         }
+        catch(exp_undef){
+            cout<<"exponential or power in given calculation undefined"<<endl;
+        }
         catch(help_info){
             print_help();
         }

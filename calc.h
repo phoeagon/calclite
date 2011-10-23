@@ -63,6 +63,7 @@ void dispose_space(){
     find_next_element(0);
 }
 
+class exp_undef{};
 class bad_input{};
 class divide_zero{};
 class grammar_error{};
@@ -85,4 +86,7 @@ int equal(double a,double b){
 
 int iswhole(double a){
     return (abs(a-(int)a)<1e-7);
+}
+int isnan(double a){
+    return a!=a;
 }
