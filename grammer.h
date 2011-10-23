@@ -182,9 +182,9 @@ double grammar :: primary(int l,int r){
     else if(head.first==_brk_type && tail.first==_brk_type){
         if (r-l-1<=0)throw grammar_error();
         if ((int)(head.second)=='(' && (int)(tail.second)==')')
-            return expression(l+1,r-1);
+            return statement(l+1,r-1);
         else if((int)(head.second)=='|' && (int)(tail.second)=='|')
-            return abs(expression(l+1,r-1));
+            return abs(statement(l+1,r-1));
         throw grammar_error();
     }
     /*else if(head.first==_opr_type){
