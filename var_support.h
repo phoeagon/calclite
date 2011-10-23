@@ -69,10 +69,12 @@ const string variables :: cin_get_var_name(){
 
 void variables :: init_system_var(){
     try{
-        memory_init[add_var("_debug",1)]=1;
-        memory_init[add_var("_warning",1)]=1;
+        memory_init[add_var("_debug",1)]=0;
+        memory_init[add_var("_warning",1)]=0;
+        memory_init[add_var("_precision",8)]=0;
+
         memory_init[add_var("_e",2.718281828459045f)]=1;
-        memory_init[add_var("_pi",3.141592653589793f)]=1;
+        memory_init[add_var("_pi",3.14159265358979323f)]=1;
         memory_init[add_var("_phi", 1.618033988749895f)]=1;
     }catch(duplicate_def){
         throw init_error();

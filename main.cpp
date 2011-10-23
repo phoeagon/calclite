@@ -23,7 +23,9 @@ int main(){
 
     while (1){
         try{
-                cout << instance.run()<<endl;
+                int x = instance.tkin.var_data.get_var_pos("_precision");
+                x = instance.tkin.var_data.memory[x];
+                cout << setprecision(x)<<instance.run()<<endl;
         }
         catch(init_error){
             cout<<"system initialization error!"<<endl;

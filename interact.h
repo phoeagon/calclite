@@ -16,6 +16,7 @@ int print_help(){
     cout<<"[system variable: _pi, _e, _phi ]\n//you can edit them but it's not recommended!\n";
     cout<<"[environment variable: _debug, _warning] either 0 or 1\n";
     cout<<"Priority & associativity:\n   (low) assign[R], ><~[L], +-[L], */%[L], ^[R] , ![L] , ()||[L] (High) \n";
+    cout<<" [set precision:] _precision : 5\n";
     cout<<"[to exit] '#' "<<endl;
 
     cout<<endl;
