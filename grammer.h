@@ -10,11 +10,11 @@ class grammar{
         int warning(){return tkin.var_data.memory[tkin.var_data.get_var_pos("_warning")];} ;
 
         double statement(int l,int r);
+        double compare_expression(int l,int r);
         double expression(int l,int r);
         double term(int l,int r);
-        double fact(int l,int r);
-        double fact2(int l,int r);
-        double high_pri_left_assoc(int l,int r);
+        double exp_and_pow(int l,int r);
+        double factorial(int l,int r);
         double primary(int l,int r);
         int opr_right_pos(int l,int r,char* pattern);
         int opr_left_pos(int l,int r,char* pattern);
@@ -22,18 +22,21 @@ class grammar{
 double grammar :: statement(int l,int r){
     if (debug())cerr<<"statement: "<<l<<" "<<r<<endl;
     if (l>r)throw grammar_error();
-    token_type dt = tkin.data()[l+1];
-    if (dt.first==_assign_type){
-        if (tkin.data()[l].first!=_var_type)throw assign_error();
-        int pos = tkin.data()[l].second;
 
-        double rvalue = expression(l+2,r);
-        tkin.var_data.memory_init[pos]  = 1;
-            //must set after calculation is done
-            // just in case that error occur but left value is set to be initlized
-        return tkin.var_data.memory[pos] = rvalue;
+    if (r>l+1){
+        token_type dt = tkin.data()[l+1];
+        if (dt.first==_assign_type){
+            if (tkin.data()[l].first!=_var_type)throw assign_error();
+            int pos = tkin.data()[l].second;
+
+            double rvalue = statement(l+2,r);
+            tkin.var_data.memory_init[pos]  = 1;
+                //must set after calculation is done
+                // just in case that error occur but left value is set to be initlized
+            return tkin.var_data.memory[pos] = rvalue;
+        }
     }
-    return expression(l,r);
+    return compare_expression(l,r);
 }
 double grammar :: run(){
     tkin.init();
@@ -47,6 +50,25 @@ double grammar :: run(){
             else throw bad_input();
         }
     return statement(0,tkin.data().size()-1);
+}
+double grammar :: compare_expression(int l,int r){
+    if (debug())cerr<<"compare_expression:"<<l<<" "<<r<<endl;
+    if (l>r)throw grammar_error();
+    try{
+        int q = opr_right_pos(l+1,r,"><~");
+        char tmp = tkin.data()[q].second;
+
+        double val1 = compare_expression(l,q-1);
+        double val2 = expression(q+1,r);
+        switch(tmp){
+            case '>':return val1>val2;
+            case '<':return val1<val2;
+            case '~':return equal(val1,val2);
+        }
+        throw grammar_error();
+    }catch(no_such_pos){
+        return expression(l,r);
+    }
 }
 double grammar :: expression(int l,int r){
     if (debug())cerr<<"expression:"<<l<<" "<<r<<endl;
@@ -78,14 +100,14 @@ double grammar :: term(int l,int r){
 
         char tmp = tkin.data()[q].second;
 
-        if (tmp=='*')return term(l,q-1)*fact(q+1,r);
+        if (tmp=='*')return term(l,q-1)*exp_and_pow(q+1,r);
         else if (tmp=='/'){
-            double divisor = fact(q+1,r);
+            double divisor = exp_and_pow(q+1,r);
             if (equal(0.0,divisor))throw divide_zero();
             return term(l,q-1)/divisor;
         }
         else if (tmp=='%'){
-            double num2 = fact(q+1,r);
+            double num2 = exp_and_pow(q+1,r);
             double num1 = term(l,q-1);
             if (equal(num2,0))throw divide_zero();
             if (iswhole(num1) && iswhole(num2))
@@ -94,32 +116,33 @@ double grammar :: term(int l,int r){
             return 0;
         }
     }catch(no_such_pos){
-        return fact(l,r);
+        return exp_and_pow(l,r);
     }
 }
-double grammar :: fact(int l,int r){
-    if (debug())cerr<<"fact:"<<l<<" "<<r<<endl;
+
+double grammar :: exp_and_pow(int l,int r){
+    if (debug())cerr<<"exp_and_pow:"<<l<<" "<<r<<endl;
     if (l>r)throw grammar_error();
     try{
         int q = opr_left_pos(l,r-1,"^");
 
         //note that power right associates
-        double base = fact2(l,q-1);
-        double tt = fact(q+1,r);
+        double base = factorial(l,q-1);
+        double tt = exp_and_pow(q+1,r);
         return pow(base,tt);
     }catch(no_such_pos){
-        return fact2(l,r);
+        return factorial(l,r);
     }
 }
-double grammar :: fact2(int l,int r){
+double grammar :: factorial(int l,int r){
     //this deals with left associative operations with high priority "!"
-    if (debug())cerr<<"fact2:"<<l<<" "<<r<<endl;
+    if (debug())cerr<<"factorial:"<<l<<" "<<r<<endl;
     if (l>r)throw grammar_error();
     try{
         int pos = opr_right_pos(l+1,r,"!");
         if (pos!=r)throw no_such_pos();
 
-        double base = fact2(l,r-1);
+        double base = factorial(l,r-1);
         if (!iswhole(base) || base<0)throw fact_error();
         int ans = 1;
         for (int i=base;i>1;--i)ans*=i;
@@ -137,7 +160,7 @@ double grammar :: primary(int l,int r){
     token_type head = tkin.data()[l];
     token_type tail = tkin.data()[r];
 
-    if(head.first==_var_type){
+    if(head.first==_var_type && l==r){
         if (debug()){
             cerr<<"memory size:"<<tkin.var_data.memory.size()<<endl;
             cerr<<"at memory: "<<head.second<<endl;
