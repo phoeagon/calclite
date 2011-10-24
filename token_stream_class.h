@@ -53,7 +53,7 @@ class token_stream{
         l2r_pos = 0;
         r2l_pos = 0;
         l2r.clear();
-        cout<<"> "<<flush;
+        //cout<<"> "<<flush;
         scan();
 	}
     void token_stream :: scan(){
@@ -88,8 +88,10 @@ class token_stream{
                 switch(x){
                     case '+':case '-':case '*':case '/':case '%':
                     case '^':case '!':case '>':case '<':case '~':
+                    case '@':case '|':case '&':
+                    //case shift_opr('>'):case shift_opr('<'):
                         push_element(make_pair(_opr_type,x));break;
-                    case '(':case ')':case '|':
+                    case '(':case ')':case '[':case ']':
                         push_element(make_pair(_brk_type,x));break;
                     case '#':case '?':
                         push_element(make_pair(_cmd_type,x));break;

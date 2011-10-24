@@ -10,6 +10,7 @@ class grammar{
         int warning(){return tkin.var_data.memory[tkin.var_data.get_var_pos("_warning")];} ;
 
         double statement(int l,int r);
+        double boolean_expression(int l,int r);
         double compare_expression(int l,int r);
         double expression(int l,int r);
         double term(int l,int r);
@@ -36,7 +37,7 @@ double grammar :: statement(int l,int r){
             return tkin.var_data.memory[pos] = rvalue;
         }
     }
-    return compare_expression(l,r);
+    return boolean_expression(l,r);
 }
 double grammar :: run(){
     tkin.init();
@@ -50,6 +51,28 @@ double grammar :: run(){
             else throw bad_input();
         }
     return statement(0,tkin.data().size()-1);
+}
+double grammar :: boolean_expression(int l,int r){
+    if (debug())cerr<<"compare_expression:"<<l<<" "<<r<<endl;
+    if (l>r)throw grammar_error();
+    try{
+        int q = opr_right_pos(l+1,r,"|&");
+        char tmp = tkin.data()[q].second;
+
+        double val1 = boolean_expression(l,q-1);
+        double val2 = compare_expression(q+1,r);
+        switch(tmp){
+            case '&' : return force_int(val1) & force_int(val2);//bitwise AND
+            //case '^^':
+            case '|' : return force_int(val1) | force_int(val2);//bitwise OR
+            //case '&&':
+            //case '||':
+            default:;
+        }
+        throw grammar_error();
+    }catch(no_such_pos){
+        return compare_expression(l,r);
+    }
 }
 double grammar :: compare_expression(int l,int r){
     if (debug())cerr<<"compare_expression:"<<l<<" "<<r<<endl;
@@ -185,18 +208,18 @@ double grammar :: primary(int l,int r){
         if (r-l-1<=0)throw grammar_error();
         if ((int)(head.second)=='(' && (int)(tail.second)==')')
             return statement(l+1,r-1);
-        else if((int)(head.second)=='|' && (int)(tail.second)=='|')
+        else if((int)(head.second)=='[' && (int)(tail.second)==']')
             return abs(statement(l+1,r-1));
         throw grammar_error();
     }
-    /*else if(head.first==_opr_type){
-        switch((int)(head.second)){
-            case '+':return primary(l+1,r);
-            case '-':return -primary(l+1,r);
+    else if(head.first==_opr_type){
+        switch((char)(head.second)){
+            case '@':return ~force_int(primary(l+1,r));
+            //case '-':return -primary(l+1,r);
             default :break;
         }
         throw grammar_error();
-    }*/
+    }
     else throw grammar_error();
 }
 
@@ -216,11 +239,13 @@ int grammar :: opr_left_pos(int l,int r, char* pattern){
     while (r>=l){
             token_type tmp = tkin.data()[l];
             if (tmp.first==_brk_type){
-                if (tmp.second==')')++brk_dep;
-                else if (tmp.second=='(')
-                    --brk_dep;
-                else if (tmp.second=='|')
-                    abs_dep = 1-abs_dep;
+                switch((int)tmp.second){
+                    case ')':++brk_dep;break;
+                    case '(':--brk_dep;break;
+                    case '[':++abs_dep;break;
+                    case ']':--abs_dep;break;
+                    default:throw grammar_error();
+                }
             }
 
         for (j=0;j<ct;++j){
@@ -243,11 +268,13 @@ int grammar :: opr_right_pos(int l,int r,char* pattern){
     while (r>=l){
             token_type tmp = tkin.data()[r];
             if (tmp.first==_brk_type){
-                if (tmp.second==')')++brk_dep;
-                else if (tmp.second=='(')
-                    --brk_dep;
-                else if (tmp.second=='|')
-                    abs_dep = 1-abs_dep;
+                switch((int)tmp.second){
+                    case ')':++brk_dep;break;
+                    case '(':--brk_dep;break;
+                    case '[':++abs_dep;break;
+                    case ']':--abs_dep;break;
+                    default:throw grammar_error();
+                }
             }
 
         for (j=0;j<ct;++j){

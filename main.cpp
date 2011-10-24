@@ -3,7 +3,7 @@ using namespace std;
 
 #include "calc.h"
 #include "interact.h"
-
+#include "preprocessor.h"
 #include "var_support.h"
 
 #include "token_stream_class.h"
@@ -11,6 +11,8 @@ using namespace std;
 #include "grammer.h"
 
 int main(){
+    //cout<<">"<<endl;
+    //pre_proc();
     //tkin = new token_stream();
     print_welcome();
 
@@ -25,6 +27,7 @@ int main(){
         try{
                 int x = instance.tkin.var_data.get_var_pos("_precision");
                 x = instance.tkin.var_data.memory[x];
+                cout<<"> "<<flush;
                 cout << setprecision(x)<<instance.run()<<endl;
         }
         catch(init_error){
@@ -58,6 +61,9 @@ int main(){
         }
         catch(fact_error){
             cout<<"n! requires n to be positive integer"<<endl;
+        }
+        catch(bitwise_int){
+            cout<<" some operators (modulus, bitwise, etc) support integer values only!"<<endl;
         }
         catch(...){
             cout<<"input error!"<<endl;

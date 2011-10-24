@@ -86,7 +86,7 @@ void variables :: init_system_var(int quiet = 0){
     try{
         memory_init[add_var("_debug",0,quiet)]=0;
         memory_init[add_var("_warning",1,quiet)]=0;
-        memory_init[add_var("_precision",0,quiet)]=0;
+        memory_init[add_var("_precision",8,quiet)]=0;
 
         memory_init[add_var("_e",2.718281828459045f,quiet)]=1;
         memory_init[add_var("_pi",3.14159265358979323f,quiet)]=1;

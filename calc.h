@@ -78,6 +78,7 @@ class help_info{};
 class assign_error{};
 class init_error{};
 class fact_error{};
+class bitwise_int{};
 
 static const double pres = 1e-7;
 
@@ -90,4 +91,11 @@ int iswhole(double a){
 }
 int isnan(double a){
     return a!=a;
+}
+char shift_opr(char x){
+    return x ^ 128;
+}
+int force_int(double x){
+    if (iswhole(x))return (int)x;
+    else throw bitwise_int();
 }
