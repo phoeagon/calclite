@@ -12,10 +12,15 @@ class variables{
 
         double get_var_pos(string a);
         int add_var(string,double);
+        int add_var(string,double,int);
         void del_var(string);
-        int eval_var(string ind , double val);
+        double eval_var(string ind , double val);
         const string cin_get_var_name();
-        void init_system_var();
+        void init_system_var(int);
+        void reset_var();
+        void reset_system_var();
+    private:
+             void reset_all();
 };
 
 double variables::get_var_pos(string a){
@@ -32,6 +37,17 @@ int variables :: add_var(string ind , double val){
     memory_init.push_back(0);
     return var_table[ind] = memory.size()-1;
 }
+int variables :: add_var(string ind , double val , int quiet){
+    try{
+        return add_var(ind,val);
+    }catch(duplicate_def){
+        if (quiet){
+            eval_var(ind,val);
+            return get_var_pos(ind);
+        }
+        else throw duplicate_def();
+    }
+}
 void variables :: del_var(string ind){
     var_cast_it pos = var_table.find(ind);
     if (pos==var_table.end())
@@ -40,12 +56,11 @@ void variables :: del_var(string ind){
     // note that the actual content in memory is not released
     // so as to save time
 }
-int variables :: eval_var(string ind , double val){
+double variables :: eval_var(string ind , double val){
     var_cast_it pos = var_table.find(ind);
     if (pos==var_table.end())
         throw no_such_var();
-    memory.at((*pos).second) = val;
-    return (*pos).second;
+    return memory.at((*pos).second) = val;
 }
 const string variables :: cin_get_var_name(){
     string value ;
@@ -67,16 +82,26 @@ const string variables :: cin_get_var_name(){
     else throw bad_input();
 }
 
-void variables :: init_system_var(){
+void variables :: init_system_var(int quiet = 0){
     try{
-        memory_init[add_var("_debug",1)]=0;
-        memory_init[add_var("_warning",1)]=0;
-        memory_init[add_var("_precision",8)]=0;
+        memory_init[add_var("_debug",0,quiet)]=0;
+        memory_init[add_var("_warning",1,quiet)]=0;
+        memory_init[add_var("_precision",0,quiet)]=0;
 
-        memory_init[add_var("_e",2.718281828459045f)]=1;
-        memory_init[add_var("_pi",3.14159265358979323f)]=1;
-        memory_init[add_var("_phi", 1.618033988749895f)]=1;
+        memory_init[add_var("_e",2.718281828459045f,quiet)]=1;
+        memory_init[add_var("_pi",3.14159265358979323f,quiet)]=1;
+        memory_init[add_var("_phi", 1.618033988749895f,quiet)]=1;
     }catch(duplicate_def){
         throw init_error();
     }
 }
+void variables :: reset_all(){
+    memory.clear();
+    memory_init.clear();
+    var_table.clear();
+}
+void variables :: reset_var(){
+    reset_all();
+    init_system_var();
+}
+
