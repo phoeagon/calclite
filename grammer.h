@@ -50,6 +50,7 @@ double grammar :: run(){
                 throw help_info();
             else throw bad_input();
         }
+    if (tkin.data().size()==0)throw null_statement();
     return statement(0,tkin.data().size()-1);
 }
 double grammar :: boolean_expression(int l,int r){

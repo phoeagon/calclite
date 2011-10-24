@@ -63,6 +63,8 @@ class token_stream{
 		while(!cin_eol()){
             dispose_space();
             x = cin.get();
+            if (x==13||x==10)
+                break;
             //if (cin>>x){}else throw bad_input();
             if (isdigit(x)){
                 cin.putback(x);

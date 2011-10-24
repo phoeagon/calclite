@@ -48,9 +48,10 @@ int cin_eol(){
 }
 void find_next_element(int value){
 	char x;
-	if (cin_eol())return;
 	while (cin){
+	    if (!value && cin_eol())return;
         x=cin.get();
+        //if(x==10 || x==13)return;
 		if (isspace(x)==value){
 			cin.putback(x);
 			return ;
@@ -79,7 +80,7 @@ class assign_error{};
 class init_error{};
 class fact_error{};
 class bitwise_int{};
-
+class null_statement{};
 static const double pres = 1e-7;
 
 int equal(double a,double b){
