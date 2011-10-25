@@ -6,28 +6,27 @@ class token_stream{
     friend class variables;
 
 	public:
-//		token_stream():
-//			l2r_pos(0),r2l_pos(0) {}
 		token_type get_token();
-        void putback(){--l2r_pos;}
-		int stream_size(){return l2r.size();};
+        void    putback()   { --l2r_pos; }
+		int     stream_size() { return l2r.size(); };
 		//int r2l_size(){return r2l.size();};
-        void l_forward(){++l2r_pos;}
-        void l_backward(){--l2r_pos;}
-        stream_content_type &data(){return l2r;}
+        void    l_forward()    {++l2r_pos;}
+        void    l_backward()    {--l2r_pos;}
+        stream_content_type &data() {return l2r;}
 
 		void init();
 		void print_l2r();
 
-        int l2r_position(){return l2r_pos;}
-        variables &vars(){return var_data;}
+        int     l2r_position()  {return l2r_pos;}
+        variables   &vars()     {return var_data;}
     protected:
 	private:
-		stream_content_type l2r ;//, r2l ;
-        variables var_data;
-        int l2r_pos ,  r2l_pos ;
+		stream_content_type     l2r ;//, r2l ;
+        variables               var_data;
+        int                     l2r_pos ,  r2l_pos ;
 
-		int debug(){return var_data.memory[vars().get_var_pos("_debug")];} ;
+		int debug()
+            { return var_data.memory[vars().get_var_pos("_debug")]; } ;
         void scan();
 		int eol();
 		void push_element(token_type);
@@ -35,17 +34,17 @@ class token_stream{
 
 };
 	int 	token_stream :: eol(){
-		if ((unsigned)l2r_pos==l2r.size()-1)return 1;
+		if ( (unsigned)l2r_pos == l2r.size()-1 )return 1;
 			else return 0;
 	}
 	void token_stream :: print_l2r(){
             stream_content_type_iter  it;
-            for (it=l2r.begin();it!=l2r.end();++it)
+            for ( it=l2r.begin(); it!=l2r.end(); ++it)
                 cerr<<(*it).first<<" "<<(*it).second<<"\n";
             cerr<<endl;
 		}
-    void token_stream :: push_element(token_type x){
-        l2r.push_back(x);
+    void token_stream :: push_element( token_type x ){
+        l2r.push_back( x );
         //++l2r_pos;
     }
 	void token_stream :: init(){
@@ -53,29 +52,28 @@ class token_stream{
         l2r_pos = 0;
         r2l_pos = 0;
         l2r.clear();
-        //cout<<"> "<<flush;
         scan();
 	}
     void token_stream :: scan(){
 		int x;
         double double_tmp;
 
-		while(!cin_eol()){
+		while( !cin_eol() ){
             dispose_space();
             x = cin.get();
-            if (x==13||x==10)
+            if ( x == 13 || x == 10 )
                 break;
             //if (cin>>x){}else throw bad_input();
-            if (isdigit(x)){
-                cin.putback(x);
-                if (!(cin>>double_tmp))
+            if ( isdigit( x ) ){
+                cin.putback( x );
+                if ( !( cin >> double_tmp ) )
                     throw bad_input();
-                push_element(make_pair(_number_type,double_tmp));
+                push_element( make_pair( _number_type , double_tmp ) );
             }
-            else if (isalpha(x) || x=='_'){
-                cin.putback(x);
+            else if ( isalpha( x ) || x=='_'){
+                cin.putback( x );
                 string indtf = var_data.cin_get_var_name();
-                if (debug())cerr<<"[indentifier: ] "<<indtf<<endl;
+                if ( debug() )cerr<<"[indentifier: ] "<<indtf<<endl;
                 int pos;
 
                 try{
@@ -84,7 +82,6 @@ class token_stream{
                     pos = var_data.add_var(indtf,0);
                 }
                 push_element(make_pair(_var_type,pos));
-                //to be done here about variables
             }
             else{
                 switch(x){
@@ -111,10 +108,12 @@ class token_stream{
         for (it--;it>=l2r.begin();--it){
             r2l.push_back(*it);
         }*/
-        if (debug())print_l2r();
+        #ifdef _DEBUG
+            if ( debug() )print_l2r();
+        #endif
 	}
 	token_type token_stream :: get_token(){
         if (l2r_pos<l2r.size())
-            return data()[l2r_pos++];
-        else return l2r_pos++,make_pair(-1,NULL);
+            return data()[ l2r_pos++ ];
+        else return l2r_pos++ , make_pair(-1,NULL);
 	}

@@ -1,49 +1,59 @@
 namespace preprocessor{
-    string storage;
 
-    void pre_read(){
+    string storage; /**buffer string*/
+
+    void pre_read(){/**reads a line from cin into storage*/
         getline(cin,storage);
         storage += '\n';
     }
+
     int replace_str(string &storage,const char*pattern, const char* new_pattern){
-        int times = 0;
-        size_t pos;
+        /**replace a given pattern into new_pattern*/
+        int     times = 0;
+        size_t  pos;
         while ( (pos = storage.find(pattern))!=string::npos){
             //size_t len = pattern.size();
-            size_t len = strlen(pattern);
+            size_t  len = strlen(pattern);
             storage.replace(pos,len,new_pattern);
             ++times;
         }
         return times;
     }
-    void pre_push(){
-        int i = storage.size();
+
+    void    pre_push(){
+        /**push back storage[] back to cin*/
+        int     i = storage.size();
         while (i--)
             cin.putback(storage[i]);//,cerr<<(int)storage[i]<<' ';
             //cerr<<endl;
     }
     int pre_proc(){
+        /**get a line from cin*/
         pre_read();
-        //char ll = 13;
-        //replace_str(storage," ","");
+
+        /** replace ";" into EOL */
         replace_str(storage,";;",";");
-        //replace_str(storage,";\n","\n");
-        int x = replace_str(storage,";","\n\n")+1;
+        int     x = replace_str(storage,";","\n\n")+1;//how many sub-lines
         replace_str(storage,"\n\n\n","\n\n");//fixes ';' at EOL
+
         char b[10]={0};
+        //-----------------
+        /**replacing operators from human-styled to single-chared*/
 
-        b[0] = shift_opr('>');
-        replace_str(storage,">=",b);
-        b[0] = shift_opr('<');
-        replace_str(storage,"<=",b);
-        b[0] = shift_opr('=');
-        replace_str(storage,"==",b);
-        b[0] = shift_opr('^');
-        replace_str(storage,"^^",b);
+        #define replace_shift_opr(d,oo)\
+        b[0] = shift_opr(d);\
+        replace_str(storage,oo,b);
 
-        pre_push();
+        replace_shift_opr('>',">=");
+        replace_shift_opr('<',"<=");
+        replace_shift_opr('=',"==");
+        replace_shift_opr('^',"^^");
+
+        pre_push();/**push back to cin*/
+
         //for(int i=0;i<storage.size();++i)cerr<<(int)storage[i]<<' '<<endl;
-        return x;
+
+        return x;/** return the number of sub-lines */
     }
 
 }
