@@ -18,6 +18,7 @@ int     print_help(){
     cout<<"Priority & associativity:\n   (low) =[R], |& ^^ [L] , >< == >= <=[L], +-@~[L], \n\t\t"
     "*/%[L], (unary)+-[R], ^[R] , (unary)![L] , ()[][L] (High) \n";
     cout<<" [set precision:] _precision : 5\n";
+    cout<<"\t[ boolean values are returned as 1 or 0]";
     cout<<"[to exit] '#' "<<endl;
 
     cout<<endl;

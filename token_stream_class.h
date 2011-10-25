@@ -73,6 +73,7 @@ class token_stream{
             else if ( isalpha( x ) || x=='_'){
                 cin.putback( x );
                 string indtf = var_data.cin_get_var_name();
+                // to add functions here
                 if ( debug() )cerr<<"[indentifier: ] "<<indtf<<endl;
                 int pos;
 

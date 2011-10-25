@@ -12,7 +12,7 @@ using namespace std;
 #include "token_stream_class.h"
 
 #include "grammer.h"
-
+#include "function_support.h"
 int main(){
     print_welcome();
 
