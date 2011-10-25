@@ -17,13 +17,13 @@ int main(){
     print_welcome();
 
     grammar instance;
-    instance.init_var();
+    //instance.init_var();
 
     instance.set_debug(0);
     instance.set_warning(1);
     //instance.tkin.set_debug(1);
     while (1){
-        cout<<"> "<<flush;int x = pre_proc();//cerr<<x<<endl;
+        cout<<"> "<<flush;int x = preprocessor::pre_proc();//cerr<<x<<endl;
         //char t;
         //while (cin){t = cin.get();cerr<<(int)t<<' ';}
     while (x--){

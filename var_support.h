@@ -4,8 +4,9 @@ typedef var_cast :: iterator var_cast_it;
 typedef vector<char> memory_init_table;
 
 class variables{
-    friend class token_stream;
     public:
+        void init_system_var(int);
+
         var_cast        var_table;
         memory_table    memory;
         memory_init_table memory_init;
@@ -16,11 +17,18 @@ class variables{
         void del_var(string);
         double eval_var(string ind , double val);
         const string cin_get_var_name();
-        void init_system_var(int);
+
         void reset_var();
         void reset_system_var();
+
+        //constructor
+        variables(){
+            init_system_var(1);
+            memory.resize(_var_init_size);
+            memory.resize(_var_init_size);
+        };
     private:
-             void reset_all();
+        void reset_all();
 };
 
 double variables::get_var_pos(string a){

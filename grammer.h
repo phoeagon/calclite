@@ -1,23 +1,24 @@
 class grammar{
     public:
 
-        variables &var_data(){return tkin.var_data;}
-        double &var_at_pos(int x){return tkin.var_data.memory[x];}
-        char &var_at_pos_if_init(int x){return tkin.var_data.memory_init[x];}
-        int var_count(){return tkin.var_data.memory.size();}
-        void init_var(){tkin.var_data.init_system_var();}
+        variables &var_data(){return tkin.vars();}
+        double &var_at_pos(int x){return tkin.vars().memory[x];}
+        char &var_at_pos_if_init(int x){return tkin.vars().memory_init[x];}
 
-        void set_debug(int x){var_at_pos(tkin.var_data.get_var_pos("_debug"))=x;}
-        void set_warning(int x){var_at_pos(tkin.var_data.get_var_pos("_warning"))=x;}
+        int var_count(){return tkin.vars().memory.size();}
+        void init_var(){tkin.vars().init_system_var();}
+
+        void set_debug(int x){var_at_pos(tkin.vars().get_var_pos("_debug"))=x;}
+        void set_warning(int x){var_at_pos(tkin.vars().get_var_pos("_warning"))=x;}
         double run();
 
-        int stream_position(){return tkin.l2r_pos;}
+        int stream_position(){return tkin.l2r_position();}
         int stream_size(){return tkin.stream_size();}
     protected:
         token_stream tkin;
     private:
-		int debug(){return var_at_pos(tkin.var_data.get_var_pos("_debug"));} ;
-        int warning(){return var_at_pos(tkin.var_data.get_var_pos("_warning"));} ;
+		int debug(){return var_at_pos(tkin.vars().get_var_pos("_debug"));} ;
+        int warning(){return var_at_pos(tkin.vars().get_var_pos("_warning"));} ;
 
         double statement();
         double boolean_expression();
@@ -42,7 +43,7 @@ double grammar :: statement(){
         switch((int)data.second){
             case '=':{
                     double x = statement();
-                    tkin.var_data.memory_init[lvalue.second] = 1;
+                    tkin.vars().memory_init[lvalue.second] = 1;
                     return var_at_pos(lvalue.second) = x;
             }
             default:throw grammar_error();
@@ -68,7 +69,7 @@ double grammar :: run(){
 }
 double grammar :: boolean_expression(){
     //left associativity
-    if (debug())cerr<<"boolean_expression:"<<tkin.l2r_pos<<endl;
+    if (debug())cerr<<"boolean_expression:"<<tkin.l2r_position()<<endl;
 
     double left = compare_expression();
     token_type t = tkin.get_token();
@@ -88,7 +89,7 @@ double grammar :: boolean_expression(){
     }
 }
 double grammar :: compare_expression(){//left associates
-    if (debug())cerr<<"compare_expression:"<<tkin.l2r_pos<<endl;
+    if (debug())cerr<<"compare_expression:"<<tkin.l2r_position()<<endl;
     double left = expression();
     token_type t = tkin.get_token();
     while(1){
@@ -103,7 +104,7 @@ double grammar :: compare_expression(){//left associates
     }
 }
 double grammar :: expression(){
-    if (debug())cerr<<"expression:"<<tkin.l2r_pos<<endl;
+    if (debug())cerr<<"expression:"<<tkin.l2r_position()<<endl;
     double left = term();
     token_type data = tkin.get_token();
     while(1){
@@ -118,7 +119,7 @@ double grammar :: expression(){
     }
 }
 double grammar :: term(){
-    if (debug())cerr<<"term:"<<tkin.l2r_pos<<endl;
+    if (debug())cerr<<"term:"<<tkin.l2r_position()<<endl;
     double left = unary_plus();
     token_type data = tkin.get_token();
     while(1){
@@ -147,7 +148,7 @@ double grammar :: term(){
 }
 double grammar :: unary_plus(){
     //right associate
-    if (debug())cerr<<"unary_plus()"<<tkin.l2r_pos<<endl;
+    if (debug())cerr<<"unary_plus()"<<tkin.l2r_position()<<endl;
     token_type t = tkin.get_token();
     if (t.first==_opr_type){
         switch((int)(t.second)){
@@ -163,7 +164,7 @@ double grammar :: unary_plus(){
 }
 double grammar :: exp_and_pow(){
     //right associate
-    if (debug())cerr<<"exp_and_pow:"<<tkin.l2r_pos<<endl;
+    if (debug())cerr<<"exp_and_pow:"<<tkin.l2r_position()<<endl;
 
     double left = factorial();
     token_type t = tkin.get_token();
@@ -180,7 +181,7 @@ double grammar :: exp_and_pow(){
 double grammar :: factorial(){
     //left associative operations with high priority "!"
     //also, it involves single value
-    if (debug())cerr<<"factorial:"<<tkin.l2r_pos<<endl;
+    if (debug())cerr<<"factorial:"<<tkin.l2r_position()<<endl;
     double left = primary();
     token_type t = tkin.get_token();
     while (1){
@@ -198,7 +199,7 @@ double grammar :: factorial(){
     }
 }
 double grammar :: primary(){
-    if (debug())cerr<<"primary "<<tkin.l2r_pos<<endl;
+    if (debug())cerr<<"primary "<<tkin.l2r_position()<<endl;
     token_type t = tkin.get_token();
     switch((int)t.first){
         case(_var_type):
@@ -226,7 +227,7 @@ double grammar :: primary(){
             }
             else throw grammar_error();
         }
-
+        default : throw grammar_error();
     }
 
 }

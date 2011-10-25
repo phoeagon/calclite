@@ -17,17 +17,17 @@ class token_stream{
         stream_content_type &data(){return l2r;}
 
 		void init();
-        void set_debug(int x){var_data.memory[var_data.get_var_pos("_debug")]=x;}
 		void print_l2r();
 
-
+        int l2r_position(){return l2r_pos;}
+        variables &vars(){return var_data;}
+    protected:
+	private:
+		stream_content_type l2r ;//, r2l ;
         variables var_data;
         int l2r_pos ,  r2l_pos ;
-	protected:
-		stream_content_type l2r ;//, r2l ;
 
-	private:
-		int debug(){return var_data.memory[var_data.get_var_pos("_debug")];} ;
+		int debug(){return var_data.memory[vars().get_var_pos("_debug")];} ;
         void scan();
 		int eol();
 		void push_element(token_type);

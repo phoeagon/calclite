@@ -21,6 +21,8 @@ using namespace std;
 //	int _type,value;
 typedef pair<int,double> token_type;
 
+static const int _var_init_size = 10;
+
 static const int _number_type = 0;
 static const int _var_type = 1;
 static const int _opr_type = 2;
@@ -94,9 +96,6 @@ int iswhole(double a){
 int isnan(double a){
     return a!=a;
 }
-/*char shift_opr(char x){
-    return x ^ 128;
-}*/
 #define shift_opr(x) ((x)^128)
 int force_int(double x){
     if (iswhole(x))return (int)x;
