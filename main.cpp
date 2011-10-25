@@ -17,7 +17,7 @@ int main(){
     print_welcome();
 
     grammar instance;
-    instance.tkin.var_data.init_system_var();
+    instance.init_var();
 
     instance.set_debug(0);
     instance.set_warning(1);
@@ -28,13 +28,13 @@ int main(){
         //while (cin){t = cin.get();cerr<<(int)t<<' ';}
     while (x--){
         try{
-                int x = instance.tkin.var_data.get_var_pos("_precision");
-                x = instance.tkin.var_data.memory[x];
+                int x = instance.var_data().get_var_pos("_precision");
+                x = instance.var_data().memory[x];
                 //cout<<"> "<<flush;
                 cout << setprecision(x);
                 double ans = instance.run();
 
-                if (instance.tkin.l2r_pos!=instance.tkin.data().size())throw grammar_error();
+                if (instance.stream_position()!=instance.stream_size())throw grammar_error();
 
                 cout<<ans<<endl;
         }

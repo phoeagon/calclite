@@ -10,7 +10,7 @@ class token_stream{
 //			l2r_pos(0),r2l_pos(0) {}
 		token_type get_token();
         void putback(){--l2r_pos;}
-		int buffer_size(){return l2r.size();};
+		int stream_size(){return l2r.size();};
 		//int r2l_size(){return r2l.size();};
         void l_forward(){++l2r_pos;}
         void l_backward(){--l2r_pos;}

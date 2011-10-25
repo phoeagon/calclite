@@ -1,13 +1,23 @@
 class grammar{
     public:
 
-        token_stream tkin;
-        void set_debug(int x){tkin.var_data.memory[tkin.var_data.get_var_pos("_debug")]=x;}
-        void set_warning(int x){tkin.var_data.memory[tkin.var_data.get_var_pos("_warning")]=x;}
+        variables &var_data(){return tkin.var_data;}
+        double &var_at_pos(int x){return tkin.var_data.memory[x];}
+        char &var_at_pos_if_init(int x){return tkin.var_data.memory_init[x];}
+        int var_count(){return tkin.var_data.memory.size();}
+        void init_var(){tkin.var_data.init_system_var();}
+
+        void set_debug(int x){var_at_pos(tkin.var_data.get_var_pos("_debug"))=x;}
+        void set_warning(int x){var_at_pos(tkin.var_data.get_var_pos("_warning"))=x;}
         double run();
+
+        int stream_position(){return tkin.l2r_pos;}
+        int stream_size(){return tkin.stream_size();}
+    protected:
+        token_stream tkin;
     private:
-		int debug(){return tkin.var_data.memory[tkin.var_data.get_var_pos("_debug")];} ;
-        int warning(){return tkin.var_data.memory[tkin.var_data.get_var_pos("_warning")];} ;
+		int debug(){return var_at_pos(tkin.var_data.get_var_pos("_debug"));} ;
+        int warning(){return var_at_pos(tkin.var_data.get_var_pos("_warning"));} ;
 
         double statement();
         double boolean_expression();
@@ -33,7 +43,7 @@ double grammar :: statement(){
             case '=':{
                     double x = statement();
                     tkin.var_data.memory_init[lvalue.second] = 1;
-                    return tkin.var_data.memory[lvalue.second] = x;
+                    return var_at_pos(lvalue.second) = x;
             }
             default:throw grammar_error();
         }
@@ -193,13 +203,13 @@ double grammar :: primary(){
     switch((int)t.first){
         case(_var_type):
             if (debug()){
-                cerr<<"memory size:"<<tkin.var_data.memory.size()<<endl;
+                cerr<<"memory size:"<<var_count()<<endl;
                 cerr<<"at memory: "<<t.second<<endl;
             }
-            if(t.second<tkin.var_data.memory.size()){
-            if (warning() && tkin.var_data.memory_init[(int)t.second]==0)
+            if(t.second<var_count()){
+            if (warning() && var_at_pos_if_init((int)t.second)==0)
                     cout<<"Warning: uninitialized variable detected! zeroed it by default!"<<endl;
-                return tkin.var_data.memory.at((int)t.second);
+                return var_at_pos((int)t.second);
             }
             else throw no_such_var();
             break;

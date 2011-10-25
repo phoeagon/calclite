@@ -1,7 +1,7 @@
 typedef vector<double> memory_table;
 typedef map<string,int> var_cast;
 typedef var_cast :: iterator var_cast_it;
-typedef vector<bool> memory_init_table;
+typedef vector<char> memory_init_table;
 
 class variables{
     friend class token_stream;
