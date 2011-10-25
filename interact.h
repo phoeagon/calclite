@@ -10,12 +10,12 @@ int print_help(){
     cout<<"[other operators: +-*/%^!]\n";
     cout<<"use brackets '()' to change priority, [x] to get absolute value of x.\n";
     cout<<"[note that '5*-2' is not allowed ]\n";
-    cout<<"[bigger,smaller,equal : > , < , = ]\n";
+    cout<<"[bigger,smaller,equal : > , < , == ]\n";
     cout<<"[define a variable]\n>a : 2+4\n6\n  [all uninitialized variables equal 0]\n"<<flush;
     cout<<"[    and will cause a warning by default]\n";
     cout<<"[system variable: _pi, _e, _phi ]\n//you can edit them but it's not recommended!\n";
     cout<<"[environment variable: _debug, _warning] either 0 or 1\n";
-    cout<<"Priority & associativity:\n   (low) assign[R], |&[L],><~[L], +-[L], */%[L], ^[R] , ![L] , @[L] , ()[][L] (High) \n";
+    cout<<"Priority & associativity:\n   (low) assign[R], |&[L] , >< == [L], +-@~[L], */%[L], ^[R] , ![L] , ()[][L] (High) \n";
     cout<<" [set precision:] _precision : 5\n";
     cout<<"[to exit] '#' "<<endl;
 

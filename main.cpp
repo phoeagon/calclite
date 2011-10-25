@@ -19,7 +19,7 @@ int main(){
     grammar instance;
     instance.tkin.var_data.init_system_var();
 
-    instance.set_debug(1);
+    instance.set_debug(0);
     instance.set_warning(1);
     //instance.tkin.set_debug(1);
     while (1){
@@ -31,7 +31,12 @@ int main(){
                 int x = instance.tkin.var_data.get_var_pos("_precision");
                 x = instance.tkin.var_data.memory[x];
                 //cout<<"> "<<flush;
-                cout << setprecision(x)<<instance.run()<<endl;
+                cout << setprecision(x);
+                double ans = instance.run();
+
+                if (instance.tkin.l2r_pos!=instance.tkin.data().size())throw grammar_error();
+
+                cout<<ans<<endl;
         }
         catch(init_error){
             cout<<"system initialization error!"<<endl;

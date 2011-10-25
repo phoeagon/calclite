@@ -38,17 +38,17 @@ typedef stream_content_type :: iterator  stream_content_type_iter;
 
 void empty_cin_buffer(){
 	cin.clear();
-	char x;
+	int x;
 	while (x=cin.get())
 		if (x==10 || x==13)break;
 }
 
 int cin_eol(){
-    char x = cin.peek();
+    int x = cin.peek();
     return (x==10 || x==13);
 }
 void find_next_element(int value){
-	char x;
+	int x;
 	while (cin){
 	    if (!value && cin_eol())return;
         x=cin.get();
@@ -89,15 +89,17 @@ int equal(double a,double b){
 }
 
 int iswhole(double a){
-    return (abs(a-(int)a)<1e-7);
+    return (abs(a-round(a)<1e-7));
 }
 int isnan(double a){
     return a!=a;
 }
-char shift_opr(char x){
+/*char shift_opr(char x){
     return x ^ 128;
-}
+}*/
+#define shift_opr(x) ((x)^128)
 int force_int(double x){
     if (iswhole(x))return (int)x;
     else throw bitwise_int();
 }
+

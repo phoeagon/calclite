@@ -57,7 +57,7 @@ class token_stream{
         scan();
 	}
     void token_stream :: scan(){
-		char x;
+		int x;
         double double_tmp;
 
 		while(!cin_eol()){
@@ -91,13 +91,14 @@ class token_stream{
                     case '+':case '-':case '*':case '/':case '%':
                     case '^':case '!':case '>':case '<':case '~':
                     case '@':case '|':case '&':
-                    //case shift_opr('>'):case shift_opr('<'):
+                    case shift_opr('>'):case shift_opr('<'):
+                    case shift_opr('='):case shift_opr('^'):
                         push_element(make_pair(_opr_type,x));break;
                     case '(':case ')':case '[':case ']':
                         push_element(make_pair(_brk_type,x));break;
                     case '#':case '?':
                         push_element(make_pair(_cmd_type,x));break;
-                    case ':':
+                    case '=':
                         push_element(make_pair(_assign_type,x));break;
                     default:
                         throw bad_input();
@@ -115,5 +116,5 @@ class token_stream{
 	token_type token_stream :: get_token(){
         if (l2r_pos<l2r.size())
             return data()[l2r_pos++];
-        else return make_pair(-1,NULL);
+        else return l2r_pos++,make_pair(-1,NULL);
 	}
