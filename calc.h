@@ -10,6 +10,7 @@
 #include <stack>
 #include <queue>
 #include <string>
+#include <cerrno>
 #include <cstdlib>
 #include <cctype>
 #include <ctime>

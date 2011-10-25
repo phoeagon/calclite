@@ -19,7 +19,7 @@ int main(){
     grammar instance;
     instance.tkin.var_data.init_system_var();
 
-    instance.set_debug(0);
+    instance.set_debug(1);
     instance.set_warning(1);
     //instance.tkin.set_debug(1);
     while (1){

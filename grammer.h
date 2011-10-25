@@ -9,35 +9,36 @@ class grammar{
 		int debug(){return tkin.var_data.memory[tkin.var_data.get_var_pos("_debug")];} ;
         int warning(){return tkin.var_data.memory[tkin.var_data.get_var_pos("_warning")];} ;
 
-        double statement(int l,int r);
-        double boolean_expression(int l,int r);
-        double compare_expression(int l,int r);
-        double expression(int l,int r);
-        double term(int l,int r);
-        double exp_and_pow(int l,int r);
-        double factorial(int l,int r);
-        double primary(int l,int r);
+        double statement();
+        double boolean_expression();
+        double compare_expression();
+        double expression();
+        double term();
+        double exp_and_pow();
+        double factorial();
+        double primary();
         int opr_right_pos(int l,int r,char* pattern);
         int opr_left_pos(int l,int r,char* pattern);
 };
-double grammar :: statement(int l,int r){
-    if (debug())cerr<<"statement: "<<l<<" "<<r<<endl;
-    if (l>r)throw grammar_error();
+double grammar :: statement(){
+    if (debug())cerr<<"statement: "<<endl;
 
-    if (r>l+1){
-        token_type dt = tkin.data()[l+1];
-        if (dt.first==_assign_type){
-            if (tkin.data()[l].first!=_var_type)throw assign_error();
-            int pos = tkin.data()[l].second;
+    token_type lvalue = tkin.get_token();
+    if (lvalue.first != _var_type){tkin.putback();return boolean_expression();}
 
-            double rvalue = statement(l+2,r);
-            tkin.var_data.memory_init[pos]  = 1;
-                //must set after calculation is done
-                // just in case that error occur but left value is set to be initlized
-            return tkin.var_data.memory[pos] = rvalue;
+    token_type data = tkin.get_token();
+    if (data.first!=_assign_type){if (data.first>=0)tkin.putback();tkin.putback();return boolean_expression();}
+
+    while(1){
+        switch((char)data.second){
+            case ':':{
+                    double x = statement();
+                    tkin.var_data.memory_init[lvalue.second] = 1;
+                    return tkin.var_data.memory[lvalue.second] = x;
+            }
+            default:throw grammar_error();
         }
     }
-    return boolean_expression(l,r);
 }
 double grammar :: run(){
     tkin.init();
@@ -51,169 +52,151 @@ double grammar :: run(){
             else throw bad_input();
         }
     if (tkin.data().size()==0)throw null_statement();
-    return statement(0,tkin.data().size()-1);
+    return statement();
 }
-double grammar :: boolean_expression(int l,int r){
-    if (debug())cerr<<"compare_expression:"<<l<<" "<<r<<endl;
-    if (l>r)throw grammar_error();
-    try{
-        int q = opr_right_pos(l+1,r,"|&");
-        char tmp = tkin.data()[q].second;
+double grammar :: boolean_expression(){
+    //left associativity
+    if (debug())cerr<<"boolean_expression:"<<tkin.l2r_pos<<endl;
 
-        double val1 = boolean_expression(l,q-1);
-        double val2 = compare_expression(q+1,r);
-        switch(tmp){
-            case '&' : return force_int(val1) & force_int(val2);//bitwise AND
-            //case '^^':
-            case '|' : return force_int(val1) | force_int(val2);//bitwise OR
-            //case '&&':
-            //case '||':
-            default:;
+    int left = force_int(compare_expression());
+    token_type t = tkin.get_token();
+    while(1){
+        switch((char)t.second){
+            case '&':
+                left &= force_int(compare_expression());
+                t = tkin.get_token();break;
+            case '|':
+                left |= force_int(compare_expression());
+                t = tkin.get_token();break;
+            default:tkin.putback();return left;
         }
-        throw grammar_error();
-    }catch(no_such_pos){
-        return compare_expression(l,r);
     }
 }
-double grammar :: compare_expression(int l,int r){
-    if (debug())cerr<<"compare_expression:"<<l<<" "<<r<<endl;
-    if (l>r)throw grammar_error();
-    try{
-        int q = opr_right_pos(l+1,r,"><~");
-        char tmp = tkin.data()[q].second;
-
-        double val1 = compare_expression(l,q-1);
-        double val2 = expression(q+1,r);
-        switch(tmp){
-            case '>':return val1>val2;
-            case '<':return val1<val2;
-            case '~':return equal(val1,val2);
+double grammar :: compare_expression(){//left associates
+    if (debug())cerr<<"compare_expression:"<<tkin.l2r_pos<<endl;
+    double left = expression();
+    token_type t = tkin.get_token();
+    while(1){
+        switch((char)t.second){
+            case '>':   left = left>expression();t = tkin.get_token();break;
+            case '<':   left = left<expression();t = tkin.get_token();break;
+            case '=':   left = left==expression();t= tkin.get_token();break;
+            default:    tkin.putback();return left;
         }
-        throw grammar_error();
-    }catch(no_such_pos){
-        return expression(l,r);
     }
 }
-double grammar :: expression(int l,int r){
-    if (debug())cerr<<"expression:"<<l<<" "<<r<<endl;
-    if (l>r)throw grammar_error();
-    try{
-        int q = opr_right_pos(l,r,"+-");
-        //note that "+-" has left associativity
-        char tmp = tkin.data()[q].second;
-        switch(tmp){
+double grammar :: expression(){
+    if (debug())cerr<<"expression:"<<tkin.l2r_pos<<endl;
+    double left = term();
+    token_type data = tkin.get_token();
+    while(1){
+        switch((char)data.second){
             case '+':
-                if (q-l)return expression(l,q-1)+term(q+1,r);
-                    else return term(q+1,r);
+                left+=term();data=tkin.get_token();break;
             case '-':
-                if (q-l)return expression(l,q-1)-term(q+1,r);
-                    else return -term(q+1,r);
-            default : throw grammar_error();
+                left-=term();data=tkin.get_token();break;
+            default:
+                tkin.putback(); return left;
         }
-    }catch(no_such_pos){
-        return term(l,r);
     }
 }
-double grammar :: term(int l,int r){
-    if (debug())cerr<<"term:"<<l<<" "<<r<<endl;
-    if (l>r)throw grammar_error();
-
-    try{
-        int q = opr_right_pos(l+1,r,"*/%");
-        //note that "*/%" has left associativity
-
-        char tmp = tkin.data()[q].second;
-
-        if (tmp=='*')return term(l,q-1)*exp_and_pow(q+1,r);
-        else if (tmp=='/'){
-            double divisor = exp_and_pow(q+1,r);
-            if (equal(0.0,divisor))throw divide_zero();
-            return term(l,q-1)/divisor;
+double grammar :: term(){
+    if (debug())cerr<<"term:"<<tkin.l2r_pos<<endl;
+    double left = exp_and_pow();
+    token_type data = tkin.get_token();
+    while(1){
+        switch((char)data.second){
+            case '*':left *= exp_and_pow();data = tkin.get_token();break;
+            case '/':
+            {
+                double dvsr = exp_and_pow();
+                if (equal(dvsr,0)){throw divide_zero();}
+                left /= exp_and_pow();
+                data = tkin.get_token();
+                break;
+            }
+            case '%':{
+                int val1 = force_int(left);
+                int val2 = force_int(exp_and_pow());
+                if (val2==0)throw divide_zero();
+                left = val1 % val2;
+                data = tkin.get_token();
+                break;}
+            default :tkin.putback();
+                return left;
         }
-        else if (tmp=='%'){
-            double num2 = exp_and_pow(q+1,r);
-            double num1 = term(l,q-1);
-            if (equal(num2,0))throw divide_zero();
-            if (iswhole(num1) && iswhole(num2))
-                return (int)num1%(int)num2;
-            else throw modulus_error();
-            return 0;
-        }
-    }catch(no_such_pos){
-        return exp_and_pow(l,r);
     }
 }
 
-double grammar :: exp_and_pow(int l,int r){
-    if (debug())cerr<<"exp_and_pow:"<<l<<" "<<r<<endl;
-    if (l>r)throw grammar_error();
-    try{
-        int q = opr_left_pos(l,r-1,"^");
+double grammar :: exp_and_pow(){
+    //right associate
+    if (debug())cerr<<"exp_and_pow:"<<tkin.l2r_pos<<endl;
 
-        //note that power right associates
-        double base = factorial(l,q-1);
-        double tt = exp_and_pow(q+1,r);
-        double x = pow(base,tt);
-        if (!isnan(x))return x;//if x is not Nan
-            else throw exp_undef();
-    }catch(no_such_pos){
-        return factorial(l,r);
+    double left = factorial();
+    token_type t = tkin.get_token();
+    switch((char)t.second){
+        case '^':
+            {double v2 = exp_and_pow();
+            left = pow(left,v2);
+            if (errno)throw exp_undef();
+            return left;
+            }
+        default : tkin.putback();return left;
     }
 }
-double grammar :: factorial(int l,int r){
-    //this deals with left associative operations with high priority "!"
-    if (debug())cerr<<"factorial:"<<l<<" "<<r<<endl;
-    if (l>r)throw grammar_error();
-    try{
-        int pos = opr_right_pos(l+1,r,"!");
-        if (pos!=r)throw no_such_pos();
-
-        double base = factorial(l,r-1);
-        if (!iswhole(base) || base<0)throw fact_error();
-        int ans = 1;
-        for (int i=base;i>1;--i)ans*=i;
-        return ans;
-
-    }catch(no_such_pos){
-        return primary(l,r);
+double grammar :: factorial(){
+    //left associative operations with high priority "!"
+    //also, it involves single value
+    if (debug())cerr<<"factorial:"<<tkin.l2r_pos<<endl;
+    double left = primary();
+    token_type t = tkin.get_token();
+    while (1){
+        switch((char)t.second){
+            case '!':{
+                int x =force_int(left);
+                int f = 1;
+                while (x)f*=x--;
+                return f;
+                    break;
+            }
+            default : tkin.putback();return left;
+        }
     }
-
 }
-double grammar :: primary(int l,int r){
-    if (debug())cerr<<"primary:"<<l<<" "<<r<<endl;
-    if (l>r)throw grammar_error();
-
-    token_type head = tkin.data()[l];
-    token_type tail = tkin.data()[r];
-
-    if(head.first==_var_type && l==r){
-        if (debug()){
-            cerr<<"memory size:"<<tkin.var_data.memory.size()<<endl;
-            cerr<<"at memory: "<<head.second<<endl;
+double grammar :: primary(){
+    if (debug())cerr<<"primary "<<tkin.l2r_pos<<endl;
+    token_type t = tkin.get_token();
+    switch((char)t.first){
+        case(_var_type):
+            if (debug()){
+                cerr<<"memory size:"<<tkin.var_data.memory.size()<<endl;
+                cerr<<"at memory: "<<t.second<<endl;
+            }
+            if(t.second<tkin.var_data.memory.size()){
+            if (warning() && tkin.var_data.memory_init[(int)t.second]==0)
+                    cout<<"Warning: uninitialized variable detected! zeroed it by default!"<<endl;
+                return tkin.var_data.memory.at((int)t.second);
+            }
+            else throw no_such_var();
+            break;
+        case (_number_type):return t.second;
+        case (_brk_type):{
+            double d = statement();
+            token_type tail = tkin.get_token();
+            if (tail.first==_brk_type){
+                switch((char)(t.second)){
+                    case '(':if ((char)(tail.second)!=')')throw grammar_error();else return d;
+                    case '[':if ((char)(tail.second)!=']')throw grammar_error();else return abs(d);
+                    default: throw grammar_error();
+                }
+            }
+            else throw grammar_error();
         }
 
-        if(head.second<tkin.var_data.memory.size()){
-            if (warning() && tkin.var_data.memory_init[(int)head.second]==0)
-                cout<<"Warning: uninitialized variable detected! zeroed it by default!"<<endl;
-            return tkin.var_data.memory.at((int)head.second);
-        }
-        else throw no_such_var();
     }
-    else if (head.first==_number_type){
-        if (l!=r)
-            throw grammar_error();
 
-        return head.second;
-    }
-    else if(head.first==_brk_type && tail.first==_brk_type){
-        if (r-l-1<=0)throw grammar_error();
-        if ((int)(head.second)=='(' && (int)(tail.second)==')')
-            return statement(l+1,r-1);
-        else if((int)(head.second)=='[' && (int)(tail.second)==']')
-            return abs(statement(l+1,r-1));
-        throw grammar_error();
-    }
-    else if(head.first==_opr_type){
+
+    /*else if(head.first==_opr_type){
         switch((char)(head.second)){
             case '@':return ~force_int(primary(l+1,r));
             //case '-':return -primary(l+1,r);
@@ -222,6 +205,7 @@ double grammar :: primary(int l,int r){
         throw grammar_error();
     }
     else throw grammar_error();
+*/
 }
 
 

@@ -9,7 +9,7 @@ class token_stream{
 //		token_stream():
 //			l2r_pos(0),r2l_pos(0) {}
 		token_type get_token();
-
+        void putback(){--l2r_pos;}
 		int buffer_size(){return l2r.size();};
 		//int r2l_size(){return r2l.size();};
         void l_forward(){++l2r_pos;}
@@ -22,10 +22,10 @@ class token_stream{
 
 
         variables var_data;
-
+        int l2r_pos ,  r2l_pos ;
 	protected:
 		stream_content_type l2r ;//, r2l ;
-		int l2r_pos ,  r2l_pos ;
+
 	private:
 		int debug(){return var_data.memory[var_data.get_var_pos("_debug")];} ;
         void scan();
@@ -113,5 +113,7 @@ class token_stream{
         if (debug())print_l2r();
 	}
 	token_type token_stream :: get_token(){
-        return l2r[l2r_pos++];
+        if (l2r_pos<l2r.size())
+            return data()[l2r_pos++];
+        else return make_pair(-1,NULL);
 	}
