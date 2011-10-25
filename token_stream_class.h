@@ -21,6 +21,7 @@ class token_stream{
         variables   &vars()     {return var_data;}
     protected:
 	private:
+        functions               func;
 		stream_content_type     l2r ;//, r2l ;
         variables               var_data;
         int                     l2r_pos ,  r2l_pos ;
@@ -74,15 +75,21 @@ class token_stream{
                 cin.putback( x );
                 string indtf = var_data.cin_get_var_name();
                 // to add functions here
-                if ( debug() )cerr<<"[indentifier: ] "<<indtf<<endl;
-                int pos;
-
-                try{
-                    pos = var_data.get_var_pos(indtf);
-                }catch(no_such_var){
-                    pos = var_data.add_var(indtf,0);
+                function_cast_it sig = func.isfunction(indtf);
+                if (sig!=func.end_of_list()){
+                    push_element(make_pair(_func_type,(*sig).second));
                 }
-                push_element(make_pair(_var_type,pos));
+                else{// just a variable
+                    if ( debug() )cerr<<"[indentifier: ] "<<indtf<<endl;
+                    int pos;
+
+                    try{
+                        pos = var_data.get_var_pos(indtf);
+                    }catch(no_such_var){
+                        pos = var_data.add_var(indtf,0);
+                    }
+                    push_element(make_pair(_var_type,pos));
+                }
             }
             else{
                 switch(x){

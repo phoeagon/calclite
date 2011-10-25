@@ -17,6 +17,9 @@ static const int _func_ceil = 15;
 static const int _func_sinh = 16;
 static const int _func_cosh = 17;
 static const int _func_tanh = 18;
+static const int _func_asin = 19;
+static const int _func_acos = 20;
+static const int _func_atan = 21;
 
 typedef map<string,int> function_cast;
 typedef function_cast::iterator function_cast_it;
@@ -25,8 +28,9 @@ class functions{
     public:
         void    init_system_func();
         function_cast_it    isfunction( string s );
-        void    add_function( string s );
+        void    add_function( string s ,int x);
         double  get_result(int opr,double x);
+        function_cast_it    end_of_list(){return df.end();}
     protected:
         function_cast df;
         int x;
@@ -35,31 +39,32 @@ class functions{
 function_cast_it   functions ::    isfunction( string s ){
     return df.find(s) ;
 }
-void    functions :: add_function(string s){
-    df[s] = 1;
+void    functions :: add_function(string s,int x){
+    df[s] = x;
 }
 void    functions ::    init_system_func(){
-    add_function("sin");
-    add_function("cos");
-    add_function("tan");
-    add_function("cot");
-    add_function("sec");
-    add_function("csc");
-    add_function("asin");
-    add_function("acos");
-    add_function("atan");
-    add_function("ln");
-    add_function("exp");
-    add_function("rand");
-    add_function("log2");
-    add_function("srand");
-    add_function("sinh");
-    add_function("cosh");
-    add_function("tanh");
-    add_function("rtod");
-    add_function("dtor");
-    add_function("floor");
-    add_function("ceil");
+    #define add_func(x)\
+        add_function("x",_func_##x);
+    add_func(sin);
+    add_func(cos);
+    add_func(tan);
+    add_func(cot);
+    add_func(sec);
+    add_func(csc);
+    add_func(asin);
+    add_func(acos);
+    add_func(atan);
+    add_func(ln);
+    add_func(exp);
+    add_func(rand);
+    add_func(log2);
+    add_func(sinh);
+    add_func(cosh);
+    add_func(tanh);
+    add_func(rtod);
+    add_func(dtor);
+    add_func(floor);
+    add_func(ceil);
 }
 //std::transform(ttt.begin(),ttt.end(),x);
 

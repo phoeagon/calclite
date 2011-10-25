@@ -6,13 +6,15 @@ using namespace std;
 
 #include "calc.h"
 #include "interact.h"
+
+#include "function_support.h"
+
 #include "preprocessor.h"
 #include "var_support.h"
 
 #include "token_stream_class.h"
 
 #include "grammer.h"
-#include "function_support.h"
 int main(){
     print_welcome();
 
