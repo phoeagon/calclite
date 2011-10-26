@@ -171,7 +171,7 @@ double  grammar ::  term(){                 /**L*/ /** % / %  _P_ _C_ _G_ _L_*/
             case '/':{           /** division */
                 double dvsr = unary_plus();
                 if (equal(dvsr,0)){throw divide_zero();}
-                left /= unary_plus();
+                left /= dvsr;
                 data = tkin.get_token();
                 break;
             }

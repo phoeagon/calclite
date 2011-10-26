@@ -98,7 +98,7 @@ int     equal ( double a,double b ){
 }
 
 int     iswhole ( double a ){
-    return ( abs( a - round (a) < 1e-7) );
+    return ( abs( a - round (a) )< 1e-7 );
 }
 int     isnan ( double a ){
     return a != a;

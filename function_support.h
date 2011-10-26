@@ -26,6 +26,7 @@ static const int _func_sec = 4;
 static const int _func_csc = 5;
 static const int _func_exp = 6;
 static const int _func_ln = 7;
+static const int _func_log = 7;
 static const int _func_log2 = 8;
 static const int _func_log10 = 9;
 static const int _func_rand = 10;
@@ -43,6 +44,7 @@ static const int _func_atan = 21;
 static const int _func_sign = 22;
 static const int _func_signpow = 23;
 static const int _func_invert = 24;
+static const int _func_abs = 25;
 
 int   functions ::    isfunction( string s ){
     function_cast_it data = fs.find(s) ;
@@ -66,6 +68,9 @@ void    functions ::    init_system_func(){
     add_func(acos);
     add_func(atan);
     add_func(ln);
+    add_func(log);
+    add_func(log2);
+    add_func(log10);
     add_func(exp);
     add_func(rand);
     add_func(log2);
@@ -79,6 +84,7 @@ void    functions ::    init_system_func(){
     add_func(sign);
     add_func(signpow);
     add_func(invert);
+    add_func(abs);
 }
 //std::transform(ttt.begin(),ttt.end(),x);
 
@@ -107,6 +113,7 @@ double  functions :: get_result(int opr,double x){
         case _func_sign :   return  equal(x,0) ? 0 : ( (x>0) - (x<0) );
         case _func_signpow: return  pow(-1,x);
         case _func_invert:  return (1/x);
+        case _func_abs:     return abs(x);
         default:break;
     }
 }

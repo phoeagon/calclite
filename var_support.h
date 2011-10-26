@@ -26,8 +26,8 @@ class   variables{
         /** constructor */
         variables(){
             init_system_var(1);
-            memory.resize(_var_init_size);
-            memory.resize(_var_init_size);
+            memory.reserve(_var_init_size);
+            memory_init.reserve(_var_init_size);
         };
     private:
         void    reset_all();
@@ -45,7 +45,7 @@ int    variables ::     add_var(string ind , double val){
 
     memory.push_back(val);
     memory_init.push_back(0);
-    return var_table[ind] = memory.size()-1;
+    return (var_table[ind] = memory.size()-1);
 }
 int     variables ::    add_var
         (string ind , double val , int quiet)
