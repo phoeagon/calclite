@@ -1,6 +1,7 @@
 #ifndef GRAMMER
 class grammar{
     public:
+        grammar(){srand(time(NULL));}
         /**get DEBUG status*/
 		int         debug()
                 { return var_at_pos(tkin.vars().get_var_pos( "_debug" ) ); } ;
@@ -74,6 +75,7 @@ double  grammar ::  statement() {           /**R*/  /** assignment = */
     }
 }
 double  grammar ::  run(){                  /** main calculation function */
+    srand(time(NULL));
     tkin.init();
 
     if ( tkin.data().size() == 1 &&
@@ -153,7 +155,7 @@ double   grammar ::     expression(){       /**L*/  /** +- */
         }
     }
 }
-double  grammar ::  term(){                 /**L*/ /** % / %  _P_ _C_*/
+double  grammar ::  term(){                 /**L*/ /** % / %  _P_ _C_ _G_ _L_*/
     #ifdef _DEBUG
         if (debug())cerr<<"term:"<<tkin.l2r_position()<<endl;
     #endif
@@ -162,19 +164,18 @@ double  grammar ::  term(){                 /**L*/ /** % / %  _P_ _C_*/
     token_type data = tkin.get_token();
     while(1){
         switch( (int)data.second ){
-            case '*':
+            case '*':{           /** multiplies */
                 left *= unary_plus();
                 data = tkin.get_token();
-                break;
-            case '/':
-            {
+                break;}
+            case '/':{           /** division */
                 double dvsr = unary_plus();
                 if (equal(dvsr,0)){throw divide_zero();}
                 left /= unary_plus();
                 data = tkin.get_token();
                 break;
             }
-            case '%':{
+            case '%':{           /** modulus */
                 int val1 = force_int(left);
                 int val2 = force_int(unary_plus());
                 if (val2==0)throw divide_zero();
@@ -191,6 +192,16 @@ double  grammar ::  term(){                 /**L*/ /** % / %  _P_ _C_*/
                 int val1 = force_int(left);
                 int val2 = force_int(unary_plus());
                 return permutation(val1,val2);
+            }
+            case shift_opr('G'):{/** gcd */
+                int val1 = force_int(left);
+                int val2 = force_int(unary_plus());
+                return gcd(val1,val2);
+            }
+            case shift_opr('L'):{/** lcm */
+                int val1 = force_int(left);
+                int val2 = force_int(unary_plus());
+                return lcm(val1,val2);
             }
             default :
                 tkin.putback();

@@ -21,8 +21,11 @@
 using namespace std;
 
 
-//	int _type,value;
 typedef pair<int,double> token_type;
+
+static const double _m_pi = 3.14159265358979323f;
+static const double _m_e  = 2.718281828459045f;
+static const double _m_phi= 1.618033988749895f;
 
 static const int _var_init_size = 10;
 
@@ -132,7 +135,13 @@ int     force_int( double x ){
         return (int)x;
     else throw bitwise_int();
 }
-
+int gcd(int a,int b){
+    if (!b)return a;
+    return gcd(b,a%b);
+}
+double lcm(int a,int b){
+    return a/gcd(a,b)*(double)b;
+}
 
 /** end of core header */
 #endif

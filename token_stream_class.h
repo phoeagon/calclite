@@ -102,6 +102,7 @@ class token_stream{
                     case shift_opr('>'):case shift_opr('<'):
                     case shift_opr('='):case shift_opr('^'):
                     case shift_opr('C'):case shift_opr('P'):
+                    case shift_opr('G'):case shift_opr('L'):
                         push_element(make_pair(_opr_type,x));break;
                     case '(':case ')':case '[':case ']':
                         push_element(make_pair(_brk_type,x));break;

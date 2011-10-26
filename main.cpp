@@ -23,16 +23,16 @@ int main(){
     instance.set_var_strict_level( 1 );
     while (1){
         cout<<"> "<<flush;
-        int x = preprocessor::pre_proc();//cerr<<x<<endl;
+        int x = preprocessor::pre_proc();
 
         while (x--){
             try{
                     int x = instance.precision();
                     //cout<<"> "<<flush;
-                    cout << setprecision(x);
+                    cout << setprecision( x );
                     double ans = instance.run();
 
-                    if (errno){
+                    if ( errno ){
                             errno=0;
                             throw grammar_error();
                     }

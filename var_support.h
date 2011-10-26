@@ -103,9 +103,9 @@ void variables :: init_system_var   (int quiet = 0){
         memory_init[add_var("_precision",8,quiet)] = 0;
         memory_init[add_var("_type_strict",1,quiet)] = 0;
 
-        memory_init[add_var("_e",2.718281828459045f,quiet)] = 1;
-        memory_init[add_var("_pi",3.14159265358979323f,quiet)] = 1;
-        memory_init[add_var("_phi", 1.618033988749895f,quiet)] = 1;
+        memory_init[add_var("_e",_m_e,quiet)] = 1;
+        memory_init[add_var("_pi",_m_pi,quiet)] = 1;
+        memory_init[add_var("_phi", _m_phi,quiet)] = 1;
     }catch(duplicate_def){
         throw init_error();
     }
