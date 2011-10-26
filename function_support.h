@@ -1,3 +1,23 @@
+
+typedef map<string,int> function_cast;
+typedef function_cast::iterator function_cast_it;
+
+class functions{
+    public:
+        void    init_system_func();
+
+        int    isfunction( string s );
+        void    add_function( string s ,int x);
+        double  get_result(int opr,double x);
+
+        function_cast_it    end_of_list(){return fs.end();}
+        functions(){init_system_func();}
+
+    protected:
+        function_cast fs;
+        int x;
+};
+
 static const int _func_sin = 0;
 static const int _func_cos = 1;
 static const int _func_tan = 2;
@@ -20,31 +40,22 @@ static const int _func_tanh = 18;
 static const int _func_asin = 19;
 static const int _func_acos = 20;
 static const int _func_atan = 21;
+static const int _func_sign = 22;
+static const int _func_signpow = 23;
+static const int _func_invert = 24;
 
-typedef map<string,int> function_cast;
-typedef function_cast::iterator function_cast_it;
-
-class functions{
-    public:
-        void    init_system_func();
-        function_cast_it    isfunction( string s );
-        void    add_function( string s ,int x);
-        double  get_result(int opr,double x);
-        function_cast_it    end_of_list(){return df.end();}
-    protected:
-        function_cast df;
-        int x;
-};
-
-function_cast_it   functions ::    isfunction( string s ){
-    return df.find(s) ;
+int   functions ::    isfunction( string s ){
+    function_cast_it data = fs.find(s) ;
+    if (data==fs.end())
+        return -1;
+    else return data->second;
 }
 void    functions :: add_function(string s,int x){
-    df[s] = x;
+    fs[s] = x;
 }
 void    functions ::    init_system_func(){
     #define add_func(x)\
-        add_function("x",_func_##x);
+        add_function(#x,_func_##x);
     add_func(sin);
     add_func(cos);
     add_func(tan);
@@ -65,6 +76,9 @@ void    functions ::    init_system_func(){
     add_func(dtor);
     add_func(floor);
     add_func(ceil);
+    add_func(sign);
+    add_func(signpow);
+    add_func(invert);
 }
 //std::transform(ttt.begin(),ttt.end(),x);
 
@@ -90,6 +104,9 @@ double  functions :: get_result(int opr,double x){
         case _func_sinh :	return  sinh(x);
         case _func_cosh :	return  cosh(x);
         case _func_tanh :	return  tanh(x);
+        case _func_sign :   return  equal(x,0) ? 0 : ( (x>0) - (x<0) );
+        case _func_signpow: return  pow(-1,x);
+        case _func_invert:  return (1/x);
         default:break;
     }
 }

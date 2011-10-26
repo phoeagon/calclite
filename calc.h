@@ -1,3 +1,6 @@
+#ifndef CALC
+/** core header */
+
 #include <utility>
 #include <cstdio>
 #include <vector>
@@ -97,6 +100,32 @@ int     iswhole ( double a ){
 int     isnan ( double a ){
     return a != a;
 }
+
+double permutation(int n, int k)
+{   if (n<k)return 0;
+	double r = 1, d = n - k;
+	/** choose the smaller of k and n - k */
+	if (d > k) { k = d; d = n - k; }
+
+	while (n > k)
+		r *= n--;
+	return r;
+}
+double binomial(int n, int k)
+{   if (n<k)return 0;
+	double r = 1, d = n - k;
+	/** choose the smaller of k and n - k */
+	if (d > k) { k = d; d = n - k; }
+
+	while (n > k) {
+		r *= n--;
+		/* divide (n - k)! as soon as we can to delay overflows */
+		while (d > 1 ) r /= d--;
+	}
+	return r;
+}
+
+#undef shiftopr(x)
 #define shift_opr(x) ((x)^128)
 int     force_int( double x ){
     if ( iswhole( x ))
@@ -104,3 +133,10 @@ int     force_int( double x ){
     else throw bitwise_int();
 }
 
+
+/** end of core header */
+#endif
+
+
+
+#define CALC

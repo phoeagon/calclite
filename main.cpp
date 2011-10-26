@@ -20,20 +20,22 @@ int main(){
 
     grammar instance;
     instance.set_debug( 0 );
-    instance.set_warning( 1 );
-
+    instance.set_var_strict_level( 1 );
     while (1){
         cout<<"> "<<flush;
         int x = preprocessor::pre_proc();//cerr<<x<<endl;
 
         while (x--){
             try{
-                    int x = instance.var_data().get_var_pos("_precision");
-                    x = instance.var_data().memory[x];
+                    int x = instance.precision();
                     //cout<<"> "<<flush;
                     cout << setprecision(x);
                     double ans = instance.run();
 
+                    if (errno){
+                            errno=0;
+                            throw grammar_error();
+                    }
                     if ( instance.stream_position() != instance.stream_size() )
                         throw grammar_error();
 
@@ -56,7 +58,7 @@ int main(){
             catch( modulus_error ){
                 cout<<"modulus operations works on integers only!"<<endl;
             }
-            catch( no_such_var ){cout<<"no defined var found!"<<endl;}
+            catch( no_such_var ){cout<<"variable not defined!\n\t(try '_var_strict = 1' first?)"<<endl;}
             catch( fact_error ){
                 cout<<"n! requires n to be positive integer"<<endl;
             }

@@ -1,5 +1,5 @@
-
-
+#ifndef TOKEN_STREAM
+/** token stream header */
 
 
 class token_stream{
@@ -19,6 +19,7 @@ class token_stream{
 
         int     l2r_position()  {return l2r_pos;}
         variables   &vars()     {return var_data;}
+        functions &function(){return func;}
     protected:
 	private:
         functions               func;
@@ -49,6 +50,7 @@ class token_stream{
         //++l2r_pos;
     }
 	void token_stream :: init(){
+
         if (debug())cerr<<"token_stream :: init()";
         l2r_pos = 0;
         r2l_pos = 0;
@@ -75,9 +77,10 @@ class token_stream{
                 cin.putback( x );
                 string indtf = var_data.cin_get_var_name();
                 // to add functions here
-                function_cast_it sig = func.isfunction(indtf);
-                if (sig!=func.end_of_list()){
-                    push_element(make_pair(_func_type,(*sig).second));
+                int sig= func.isfunction(indtf);
+                if (sig!=-1){
+                    if (debug())cerr<<"[function: ]"<<indtf<<endl;
+                    push_element(make_pair(_func_type,sig));
                 }
                 else{// just a variable
                     if ( debug() )cerr<<"[indentifier: ] "<<indtf<<endl;
@@ -98,6 +101,7 @@ class token_stream{
                     case '@':case '|':case '&':
                     case shift_opr('>'):case shift_opr('<'):
                     case shift_opr('='):case shift_opr('^'):
+                    case shift_opr('C'):case shift_opr('P'):
                         push_element(make_pair(_opr_type,x));break;
                     case '(':case ')':case '[':case ']':
                         push_element(make_pair(_brk_type,x));break;
@@ -112,10 +116,6 @@ class token_stream{
 		}
 
         r2l_pos = l2r.size()-1;
-        /*stream_content_type_iter it = l2r.end();
-        for (it--;it>=l2r.begin();--it){
-            r2l.push_back(*it);
-        }*/
         #ifdef _DEBUG
             if ( debug() )print_l2r();
         #endif
@@ -125,3 +125,5 @@ class token_stream{
             return data()[ l2r_pos++ ];
         else return l2r_pos++ , make_pair(-1,NULL);
 	}
+#endif
+#define TOKEN_STREAM

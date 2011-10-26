@@ -1,3 +1,5 @@
+#ifndef VAR_SUPPORT
+
 typedef vector<double> memory_table;
 typedef map<string,int> var_cast;
 typedef var_cast :: iterator var_cast_it;
@@ -78,8 +80,8 @@ const string variables :: cin_get_var_name(){
     string value ;
     char x = cin.peek();
     if ( isalpha(x) || x=='_' ){
+        dispose_space();
         while( cin ){
-            dispose_space();
             x=cin.get();
             if (isdigit(x) || isalpha(x) || x=='_')
                 value += x;
@@ -97,8 +99,9 @@ const string variables :: cin_get_var_name(){
 void variables :: init_system_var   (int quiet = 0){
     try{
         memory_init[add_var("_debug",0,quiet)] = 0;
-        memory_init[add_var("_warning",1,quiet)] = 0;
+        memory_init[add_var("_var_strict",1,quiet)] = 0;
         memory_init[add_var("_precision",8,quiet)] = 0;
+        memory_init[add_var("_type_strict",1,quiet)] = 0;
 
         memory_init[add_var("_e",2.718281828459045f,quiet)] = 1;
         memory_init[add_var("_pi",3.14159265358979323f,quiet)] = 1;
@@ -117,3 +120,5 @@ void variables ::   reset_var(){
     init_system_var();
 }
 
+#endif
+#define VAR_SUPPORT

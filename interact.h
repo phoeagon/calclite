@@ -1,4 +1,4 @@
-
+#ifndef INTERACT
 int     print_welcome(){
     cout<<"this is a calculator by phoeagon"<<endl;
     cout<<" enter '?' for help, '#' to exit "<<endl;
@@ -23,3 +23,6 @@ int     print_help(){
 
     cout<<endl;
 }
+#endif
+
+#define INTERACT 1

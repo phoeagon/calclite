@@ -1,5 +1,16 @@
+#ifndef GRAMMER
 class grammar{
     public:
+        /**get DEBUG status*/
+		int         debug()
+                { return var_at_pos(tkin.vars().get_var_pos( "_debug" ) ); } ;
+        int         type_strict_level()
+                { return var_at_pos( tkin.vars().get_var_pos( "_type_strict" ) ); } ;
+        int         var_strict_level()
+                { return var_at_pos( tkin.vars().get_var_pos( "_var_strict" ) ); } ;
+        int         precision()
+                { return var_at_pos( tkin.vars().get_var_pos( "_precision" ) ); } ;
+
         /** functions that return a reference to variable-things**/
         variables   &var_data()         {return tkin.vars();}
         double      &var_at_pos(int x)  {return tkin.vars().memory[x];}
@@ -10,7 +21,8 @@ class grammar{
 
         /**debug function**/
         void        set_debug(int x)    {var_at_pos(tkin.vars().get_var_pos("_debug"))=x;}
-        void        set_warning(int x)  {var_at_pos(tkin.vars().get_var_pos("_warning"))=x;}
+        void        set_var_strict_level(int x)  {var_at_pos(tkin.vars().get_var_pos("_var_strict"))=x;}
+        void        set_type_strict_level(int x)  {var_at_pos(tkin.vars().get_var_pos("_type_strict"))=x;}
 
         double      run();/**calculate function*/
 
@@ -20,12 +32,10 @@ class grammar{
     protected:
         token_stream tkin;/** token_stream data*/
     private:
-    /**get DEBUG status*/
-		int         debug()
-                {return var_at_pos(tkin.vars().get_var_pos("_debug"));} ;
-        int         warning()
-                {return var_at_pos(tkin.vars().get_var_pos("_warning"));} ;
-
+        int force_int(double x){
+            if ( !iswhole( x ) && type_strict_level() )throw bitwise_int();
+            return ( int ) x ;
+        }
         double      statement();            /**R*/  /** assignment = */
         double      boolean_expression();   /**L*/  /** <bitwise> | &  ^^(xor) */
         double      compare_expression();   /**L*/  /** > < == >= <=*/
@@ -36,8 +46,7 @@ class grammar{
         double      factorial();            /**L*/  /** <unary> factorial */
         double      primary();              /**L*/  /** () []-abs */
 };
-double  grammar ::  statement() {
-            /**R*/  /** assignment = */
+double  grammar ::  statement() {           /**R*/  /** assignment = */
     if (debug())cerr<<"statement: "<<endl;
 
     token_type lvalue = tkin.get_token();
@@ -64,7 +73,7 @@ double  grammar ::  statement() {
         }
     }
 }
-double  grammar ::  run(){ /** main calculation function */
+double  grammar ::  run(){                  /** main calculation function */
     tkin.init();
 
     if ( tkin.data().size() == 1 &&
@@ -81,7 +90,7 @@ double  grammar ::  run(){ /** main calculation function */
 
     return statement();
 }
-double  grammar ::  boolean_expression(){/**L*/  /** <bitwise> | &  ^^(xor) */
+double  grammar ::  boolean_expression(){   /**L*/  /** <bitwise> | &  ^^(xor) */
     //left associativity
     #ifdef _DEBUG
         if (debug())    cerr<<"boolean_expression:"<<tkin.l2r_position()<<endl;
@@ -127,7 +136,7 @@ double  grammar ::  compare_expression(){   /**L*/  /** > < == >= <=*/
         }
     }
 }
-double   grammar ::     expression(){
+double   grammar ::     expression(){       /**L*/  /** +- */
     #ifdef _DEBUG
         if (debug())    cerr<<"expression:"<<tkin.l2r_position()<<endl;
     #endif
@@ -144,7 +153,7 @@ double   grammar ::     expression(){
         }
     }
 }
-double  grammar ::  term(){
+double  grammar ::  term(){                 /**L*/ /** % / %  _P_ _C_*/
     #ifdef _DEBUG
         if (debug())cerr<<"term:"<<tkin.l2r_position()<<endl;
     #endif
@@ -173,13 +182,23 @@ double  grammar ::  term(){
                 data = tkin.get_token();
                 break;
             }
+            case shift_opr('C'):{/** combination - binomial*/
+                int val1 = force_int(left);
+                int val2 = force_int(unary_plus());
+                return binomial(val1,val2);
+            }
+            case shift_opr('P'):{/** permutation - arrangement*/
+                int val1 = force_int(left);
+                int val2 = force_int(unary_plus());
+                return permutation(val1,val2);
+            }
             default :
                 tkin.putback();
                 return left;
         }
     }
 }
-double  grammar ::   unary_plus(){
+double  grammar ::   unary_plus(){          /**R*/  /** <unary> + - @(bitwise not) ~(logic not)*/
     //right associate
     #ifdef _DEBUG
         if (debug())cerr<<"unary_plus()"<<tkin.l2r_position()<<endl;
@@ -198,7 +217,7 @@ double  grammar ::   unary_plus(){
     tkin.putback();
     return exp_and_pow();
 }
-double  grammar ::   exp_and_pow(){
+double  grammar ::   exp_and_pow(){         /**L*/  /** ^ (power) */
     //right associate
     #ifdef _DEBUG
         if (debug())cerr<<"exp_and_pow:"<<tkin.l2r_position()<<endl;
@@ -216,7 +235,7 @@ double  grammar ::   exp_and_pow(){
         default : tkin.putback();return left;
     }
 }
-double  grammar ::   factorial(){
+double  grammar ::   factorial(){           /**L*/  /** <unary>! factorial */
     //left associative operations with high priority "!"
     //also, it involves single value
     #ifdef _DEBUG
@@ -238,7 +257,7 @@ double  grammar ::   factorial(){
         }
     }
 }
-double  grammar ::  primary(){
+double  grammar ::  primary(){              /**L*/  /** () []-abs */
     #ifdef _DEBUG
         if (debug())    cerr<<"primary "<<tkin.l2r_position()<<endl;
     #endif
@@ -252,16 +271,30 @@ double  grammar ::  primary(){
                 cerr<<"at memory: "<<t.second<<endl;
             }
             if ( t.second < var_count() ){
-            if ( warning() && var_at_pos_if_init( (int)t.second ) == 0 )
-                    cout<<"Warning: uninitialized variable "
-                    "detected! zeroed it by default!"<<endl;
-                return var_at_pos( (int)t.second );
+            if ( var_at_pos_if_init( (int)t.second ) == 0 ){
+                 switch( var_strict_level() ){
+                        case 1:
+                            cout<<"Warning: uninitialized variable "
+                            "detected! zeroed it by default!"<<endl;
+                            break;
+                        case 2:
+                            throw no_such_var();
+                        default:;
+                }
+            }
+            return var_at_pos( (int)t.second );
             }
             else
                     throw no_such_var();
             break;
         }
         case ( _number_type ):return t.second;
+        case ( _func_type ):
+        {
+            int x = t.second;
+            double xin = primary();
+            return tkin.function().get_result(x,xin);
+        }
         case ( _brk_type ):
         {
             double d = statement();
@@ -288,3 +321,5 @@ double  grammar ::  primary(){
 }
 
 
+#endif
+#define GRAMMER

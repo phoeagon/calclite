@@ -1,3 +1,4 @@
+#ifndef PREPROCESSOR
 namespace preprocessor{
 
     string storage; /**buffer string*/
@@ -48,7 +49,8 @@ namespace preprocessor{
         replace_shift_opr('<',"<=");
         replace_shift_opr('=',"==");
         replace_shift_opr('^',"^^");
-
+        replace_shift_opr('C',"_C_");
+        replace_shift_opr('P',"_P_");
         pre_push();/**push back to cin*/
 
         //for(int i=0;i<storage.size();++i)cerr<<(int)storage[i]<<' '<<endl;
@@ -57,3 +59,5 @@ namespace preprocessor{
     }
 
 }
+#endif
+#define PREPROCESSOR
