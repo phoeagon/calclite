@@ -120,7 +120,7 @@ variables that start with '_' can be system variables. you can edit them, but on
 
 	_type_strict		1:	<default>
 		reject non-integer values 
-		for integer-defined operations
+		for integer-defined operators
 				0:
 		auto-truncate non-integer values 
 			if needed

@@ -1,3 +1,19 @@
+/**
+    this header file is intended for preprocess.
+    as the implementation in "grammar" class supports only
+    one statement in a row, only operators in a character,
+    this part do a substitution to the data read from std::cin
+    and processes them before pushing everything back
+    to std::cin for grammer part to read.
+
+    namespace preprocessor{
+        pre_read()      //  read data from std::cin
+        replace_str()   //  find and replace a given pattern in a string into a new one
+        pre_push()      //  push processed data back to std::cin
+    }
+
+*/
+
 #ifndef PREPROCESSOR
 namespace preprocessor{
 

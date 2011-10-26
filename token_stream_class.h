@@ -1,38 +1,49 @@
+/**
+    this header defines a class token_stream
+        with variable support from class variables in "var_support.h"
+        with function support from class functions in "function_support.h"
+
+    the stream reads in data from std::cin
+        and break them into tokens.
+    tokens are stored in a vector and can be retrieved using get_token()
+*/
+
 #ifndef TOKEN_STREAM
 /** token stream header */
 
 
 class token_stream{
-    friend class variables;
 
 	public:
 		token_type get_token();
-        void    putback()   { --l2r_pos; }
-		int     stream_size() { return l2r.size(); };
-		//int r2l_size(){return r2l.size();};
-        void    l_forward()    {++l2r_pos;}
-        void    l_backward()    {--l2r_pos;}
-        stream_content_type &data() {return l2r;}
+        void    putback()   { --l2r_pos; }      /** put back the last token*/
+		int     stream_size() { return l2r.size(); };/** get the number of the tokens*/
 
-		void init();
-		void print_l2r();
+        void    l_forward()    {++l2r_pos;}/** token pointer plus one */
+        void    l_backward()    {--l2r_pos;}/** token pointer decrease one*/
+        stream_content_type &data() {return l2r;}/** reference to the vector that store tokens */
 
-        int     l2r_position()  {return l2r_pos;}
-        variables   &vars()     {return var_data;}
-        functions &function(){return func;}
+		void init();        /** initiate l2r things and call scan() */
+		void print_l2r();   /** print the vector of tokens, for debug purposes*/
+
+        int     l2r_position()  {return l2r_pos;}   /** get current token pointer*/
+
+        variables   &vars()     {return var_data;}  /**reference to variable data*/
+        functions &function(){return func;}         /**reference to function data */
+
     protected:
 	private:
-        functions               func;
-		stream_content_type     l2r ;//, r2l ;
-        variables               var_data;
-        int                     l2r_pos ,  r2l_pos ;
+        functions               func;   /** function data*/
+		stream_content_type     l2r ;   /** tokens */
+        variables               var_data;   /** variable data*/
+        int                     l2r_pos ,  r2l_pos ;/**token pointer*/
 
 		int debug()
             { return var_data.memory[vars().get_var_pos("_debug")]; } ;
-        void scan();
-		int eol();
-		void push_element(token_type);
-        //string raw;
+            /**get if debug mode*/
+        void scan();    /** scan std::cin and break data into tokens*/
+		int eol();      /** return if at the end of token_stream */
+		void push_element(token_type);/** add a token to stream */
 
 };
 	int 	token_stream :: eol(){
@@ -50,7 +61,7 @@ class token_stream{
         //++l2r_pos;
     }
 	void token_stream :: init(){
-
+    /** initiate l2r things and call scan() */
         if (debug())cerr<<"token_stream :: init()";
         l2r_pos = 0;
         r2l_pos = 0;
@@ -58,22 +69,23 @@ class token_stream{
         scan();
 	}
     void token_stream :: scan(){
+    /** scan std::cin and break data into tokens*/
 		int x;
         double double_tmp;
 
 		while( !cin_eol() ){
             dispose_space();
             x = cin.get();
-            if ( x == 13 || x == 10 )
+            if ( x == 13 || x == 10 )/**End of Line*/
                 break;
             //if (cin>>x){}else throw bad_input();
-            if ( isdigit( x ) || x=='.'){
+            if ( isdigit( x ) || x=='.'){/** numbers */
                 cin.putback( x );
                 if ( !( cin >> double_tmp ) )
                     throw bad_input();
                 push_element( make_pair( _number_type , double_tmp ) );
             }
-            else if ( isalpha( x ) || x=='_'){
+            else if ( isalpha( x ) || x=='_'){  /**variables and functions*/
                 cin.putback( x );
                 string indtf = var_data.cin_get_var_name();
                 // to add functions here
@@ -95,7 +107,7 @@ class token_stream{
                 }
             }
             else{
-                switch(x){
+                switch(x){  /** manipulating operators*/
                     case '+':case '-':case '*':case '/':case '%':
                     case '^':case '!':case '>':case '<':case '~':
                     case '@':case '|':case '&':

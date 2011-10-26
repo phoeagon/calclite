@@ -1,3 +1,8 @@
+/**
+*   this header file is intended for printing some information
+*   on the screen.
+*/
+
 #ifndef INTERACT
 int     print_welcome(){
     cout<<app_name<<" is a calculator by phoeagon < (c) 2011 all rights reserved >"<<endl;

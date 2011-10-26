@@ -1,3 +1,10 @@
+/**
+    this is the core header
+
+    shift_opr uses the unused bit (first bit) in a char to mark special operators.
+
+*/
+
 #ifndef CALC
 /** core header */
 
@@ -38,21 +45,21 @@ static const int _brk_type = 4; //bracket
 static const int _cmd_type = 5;
 static const int _assign_type = 6;
 
-void    init_random(){
+void    init_random(){/** initiate random seed */
 	srand(time(NULL));
 }
 
 typedef vector<token_type> stream_content_type ;
 typedef stream_content_type :: iterator  stream_content_type_iter;
 
-void    empty_cin_buffer(){
+void    empty_cin_buffer(){/** clear the std::cin line */
 	cin.clear();
 	int x;
 	while ( x = cin.get() )
 		if ( x == 10 || x == 13 )break;
 }
 
-int     cin_eol(){
+int     cin_eol(){  /** check if std::cin at End of Line*/
     int x = cin.peek();
     return ( x==10 || x==13 );
 }
@@ -69,13 +76,14 @@ void    find_next_element   ( int value )
 		}
 	}
 }
-void    jump_to_space(){
+void    jump_to_space(){    /** go to next space */
     find_next_element( 1 );
 }
-void    dispose_space(){
+void    dispose_space(){    /** go until no more space*/
     find_next_element( 0 );
 }
 
+/** error classes */
 class   exp_undef{};
 class   bad_input{};
 class    divide_zero{};
@@ -92,20 +100,26 @@ class   init_error{};
 class   fact_error{};
 class   bitwise_int{};
 class   null_statement{};
-static  const double pres = 1e-7;
 
-int     equal ( double a,double b ){
+/** precision */
+static  const double pres = 1e-10;
+
+int     equal ( double a , double b ){
+    /** check if two values equal, with tolerance */
     return ( abs( a - b ) < 1e-7 );
 }
 
 int     iswhole ( double a ){
+    /** check if a value is integral */
     return ( abs( a - round (a) )< 1e-7 );
 }
 int     isnan ( double a ){
+    /** check if #nan is given */
+    /** it's provided in math.h but not cmath */
     return a != a;
 }
 
-double permutation(int n, int k)
+double permutation(int n, int k)/**calculate p(n,k)*/
 {   if (n<k)return 0;
 	double r = 1, d = n - k;
 	/** choose the smaller of k and n - k */
@@ -115,7 +129,7 @@ double permutation(int n, int k)
 		r *= n--;
 	return r;
 }
-double binomial(int n, int k)
+double binomial(int n, int k)/**calculate c(n,k)*/
 {   if (n<k)return 0;
 	double r = 1, d = n - k;
 	/** choose the smaller of k and n - k */

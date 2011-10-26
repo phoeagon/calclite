@@ -1,3 +1,7 @@
+/**
+    this header file implements variable support
+*/
+
 #ifndef VAR_SUPPORT
 
 typedef vector<double> memory_table;
@@ -15,12 +19,12 @@ class   variables{
         memory_table       memory;
         memory_init_table    memory_init;
 
-        double  get_var_pos(string a);
-        int     add_var(string,double);
+        double  get_var_pos(string a);/**get where is variable [a] stored in memory*/
+        int     add_var(string,double);/** add a variable */
         int     add_var(string,double,int);
         void    del_var(string);
-        double  eval_var(string ind , double val);
-        const   string  cin_get_var_name();
+        double  eval_var(string ind , double val);/**evaluate a variable by name*/
+        const   string  cin_get_var_name();         /**read variable names from std::cin*/
 
 
         /** constructor */
@@ -33,13 +37,13 @@ class   variables{
         void    reset_all();
 };
 
-double  variables ::    get_var_pos(string a){
+double  variables ::    get_var_pos(string a){/**get where var [a] is stored in memory*/
     var_cast_it it ;
     it = var_table.find(a);
     if (it!=var_table.end())return (*it).second;
         else throw no_such_var();
 }
-int    variables ::     add_var(string ind , double val){
+int    variables ::     add_var(string ind , double val){/** add variable*/
     if (var_table.find(ind)!=var_table.end())
         throw duplicate_def();
 
@@ -70,13 +74,13 @@ void variables :: del_var ( string ind )
     * so as to save time
     */
 }
-double variables :: eval_var(string ind , double val){
+double variables :: eval_var(string ind , double val){/**evaluate variable by name*/
     var_cast_it pos = var_table.find(ind);
     if (pos==var_table.end())
         throw no_such_var();
     return memory.at((*pos).second) = val;
 }
-const string variables :: cin_get_var_name(){
+const string variables :: cin_get_var_name(){/**read variable name from std::cin*/
     string value ;
     char x = cin.peek();
     if ( isalpha(x) || x=='_' ){

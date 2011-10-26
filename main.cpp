@@ -1,3 +1,7 @@
+/**
+    main.cpp for this app
+*/
+
 #define _DEBUG 1
 /** allow debug message*/
 

@@ -1,3 +1,8 @@
+/**
+    this file implements system functions
+    isfuntion(s)    check if "s" is a function defined
+*/
+#ifndef FUNCTION_SUPPORT
 
 typedef map<string,int> function_cast;
 typedef function_cast::iterator function_cast_it;
@@ -6,9 +11,9 @@ class functions{
     public:
         void    init_system_func();
 
-        int    isfunction( string s );
-        void    add_function( string s ,int x);
-        double  get_result(int opr,double x);
+        int    isfunction( string s );          /**check if is a function defined*/
+        void    add_function( string s ,int x);/**add a function named s with label x*/
+        double  get_result(int opr,double x);   /** get the result of the given function labeled opr*/
 
         function_cast_it    end_of_list(){return fs.end();}
         functions(){init_system_func();}
@@ -17,7 +22,7 @@ class functions{
         function_cast fs;
         int x;
 };
-
+/** function labels */
 static const int _func_sin = 0;
 static const int _func_cos = 1;
 static const int _func_tan = 2;
@@ -48,13 +53,13 @@ static const int _func_abs = 25;
 static const int _func_round = 26;
 
 
-int   functions ::    isfunction( string s ){
+int   functions ::    isfunction( string s ){/**check if "s" is function defined*/
     function_cast_it data = fs.find(s) ;
     if (data==fs.end())
         return -1;
     else return data->second;
 }
-void    functions :: add_function(string s,int x){
+void    functions :: add_function(string s,int x){/**add a function named s with label x*/
     fs[s] = x;
 }
 void    functions ::    init_system_func(){
@@ -92,7 +97,9 @@ void    functions ::    init_system_func(){
 //std::transform(ttt.begin(),ttt.end(),x);
 
 const double _pi = 3.14159265358979;
+
 double  functions :: get_result(int opr,double x){
+/** get the result of the given function labeled opr*/
     switch(opr){
         case _func_sin :	return  sin(x);
         case _func_cos :	return  cos(x);
@@ -121,3 +128,7 @@ double  functions :: get_result(int opr,double x){
         default:break;
     }
 }
+
+#endif
+
+#define FUNCTION_SUPPORT
