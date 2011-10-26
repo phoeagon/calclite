@@ -22,7 +22,7 @@ namespace preprocessor{
 
     void pre_read(){/**reads a line from cin into storage*/
         getline(cin,storage);
-       // storage += '\n';
+        storage += ';';
     }
 
     int replace_str(string &storage,const char*pattern, const char* new_pattern){
@@ -51,6 +51,7 @@ namespace preprocessor{
 
         /** replace ";" into EOL */
         replace_str(storage,";;",";");
+        replace_str(storage," ;",";");
         int     x = replace_str(storage,";","\n\n")+1;//how many sub-lines
         replace_str(storage," \n\n\n","\n\n");
         replace_str(storage,";\n","\n");
