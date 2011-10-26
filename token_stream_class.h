@@ -3,7 +3,7 @@
         with variable support from class variables in "var_support.h"
         with function support from class functions in "function_support.h"
 
-    the stream reads in data from std::cin
+    the stream reads in data from ()::strm
         and break them into tokens.
     tokens are stored in a vector and can be retrieved using get_token()
 */
@@ -30,7 +30,8 @@ class token_stream{
 
         variables   &vars()     {return var_data;}  /**reference to variable data*/
         functions &function(){return func;}         /**reference to function data */
-
+        void    empty_strm_buffer();
+        istringstream           strm;
     protected:
 	private:
         functions               func;   /** function data*/
@@ -41,11 +42,50 @@ class token_stream{
 		int debug()
             { return var_data.memory[vars().get_var_pos("_debug")]; } ;
             /**get if debug mode*/
-        void scan();    /** scan std::cin and break data into tokens*/
+        void scan();    /** scan ()::strm and break data into tokens*/
 		int eol();      /** return if at the end of token_stream */
 		void push_element(token_type);/** add a token to stream */
 
+
+		int     strm_eol();
+        void   find_next_element   ( int value );
+        void    jump_to_space();
+        void    dispose_space();
+        const string strm_get_var_name();
 };
+
+void   token_stream:: empty_strm_buffer(){/** clear the std::strm line */
+	strm.clear();
+	int x;
+	while ( x = strm.get() )
+		if ( x == 10 || x == 13 || x<0)break;
+}
+
+int    token_stream:: strm_eol(){  /** check if std::strm at End of Line*/
+    int x = strm.peek();
+    return ( x==10 || x==13 ||x<0);
+}
+void   token_stream::find_next_element   ( int value )
+{
+	int x;
+	while ( strm ){
+	    if ( !value && strm_eol() )return;
+        x = strm.get();
+        //if(x==10 || x==13)return;
+		if ( isspace( x ) == value ){
+			strm.putback( x );
+			return ;
+		}
+	}
+}
+void  token_stream::  jump_to_space(){    /** go to next space */
+    find_next_element( 1 );
+}
+void   token_stream:: dispose_space(){    /** go until no more space*/
+    find_next_element( 0 );
+    //char u = strm.peek();
+    //if (u==10 || u==13){ char x = strm.get();}
+}
 	int 	token_stream :: eol(){
 		if ( (unsigned)l2r_pos == l2r.size()-1 )return 1;
 			else return 0;
@@ -69,25 +109,25 @@ class token_stream{
         scan();
 	}
     void token_stream :: scan(){
-    /** scan std::cin and break data into tokens*/
+    /** scan ()::strm and break data into tokens*/
 		int x;
         double double_tmp;
 
-		while( !cin_eol() ){
+		while( !strm_eol() ){
             dispose_space();
-            x = cin.get();
-            if ( x == 13 || x == 10 )/**End of Line*/
+            x = strm.get();
+            if ( x == 13 || x == 10 || x<0 )/**End of Line*/
                 break;
-            //if (cin>>x){}else throw bad_input();
+            //if (strm>>x){}else throw bad_input();
             if ( isdigit( x ) || x=='.'){/** numbers */
-                cin.putback( x );
-                if ( !( cin >> double_tmp ) )
+                strm.putback( x );
+                if ( !( strm >> double_tmp ) )
                     throw bad_input();
                 push_element( make_pair( _number_type , double_tmp ) );
             }
             else if ( isalpha( x ) || x=='_'){  /**variables and functions*/
-                cin.putback( x );
-                string indtf = var_data.cin_get_var_name();
+                strm.putback( x );
+                string indtf = strm_get_var_name();
                 // to add functions here
                 int sig= func.isfunction(indtf);
                 if (sig!=-1){
@@ -138,5 +178,26 @@ class token_stream{
             return data()[ l2r_pos++ ];
         else return l2r_pos++ , make_pair(-1,NULL);
 	}
+const string token_stream :: strm_get_var_name(){/**read variable name from std::strm*/
+    string value ;
+    char x = strm.peek();
+    if ( isalpha(x) || x=='_' ){
+        dispose_space();
+        while( strm ){
+            x=strm.get();
+            if (isdigit(x) || isalpha(x) || x=='_')
+                value += x;
+            else {
+                strm.putback(x);
+                break;
+            }
+        }
+    }
+    if ( value.size() )
+        return value;
+    else throw bad_input();
+}
+
+
 #endif
 #define TOKEN_STREAM

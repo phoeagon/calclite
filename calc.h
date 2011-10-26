@@ -25,6 +25,7 @@
 #include <cctype>
 #include <ctime>
 #include <cmath>
+#include <sstream>
 using namespace std;
 
 const string app_name = "CalcLight";
@@ -63,7 +64,7 @@ int     cin_eol(){  /** check if std::cin at End of Line*/
     int x = cin.peek();
     return ( x==10 || x==13 );
 }
-void    find_next_element   ( int value )
+void   find_next_element   ( int value )
 {
 	int x;
 	while ( cin ){
@@ -80,7 +81,9 @@ void    jump_to_space(){    /** go to next space */
     find_next_element( 1 );
 }
 void    dispose_space(){    /** go until no more space*/
+    //int v =
     find_next_element( 0 );
+    //if (v==10 || v==13)cin.putback(v);
 }
 
 /** error classes */
@@ -157,7 +160,6 @@ int gcd(int a,int b){
 double lcm(int a,int b){
     return a/gcd(a,b)*(double)b;
 }
-
 /** end of core header */
 #endif
 

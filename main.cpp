@@ -28,7 +28,8 @@ int main(){
     while (1){
         cout<<"> "<<flush;
         int line_ct = preprocessor::pre_proc();
-
+        instance.strm().clear();
+        instance.strm().str(preprocessor::storage);
         while ( line_ct-- ){
             try{
                     int x = instance.precision();
@@ -70,7 +71,7 @@ int main(){
                 cout<<" some operators (modulus, bitwise, etc) support integer values only!"<<endl;
             }
             catch( ... ){cout<<"input error!"<<endl;}
-            empty_cin_buffer();
+            instance.empty_strm_buffer();
         }
     }
 }

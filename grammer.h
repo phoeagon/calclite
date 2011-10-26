@@ -56,6 +56,8 @@ class grammar{
         /** references to stream-things */
         int         stream_position()   {   return tkin.l2r_position(); }
         int         stream_size()       {   return tkin.stream_size();  }
+        void        empty_strm_buffer(){tkin.empty_strm_buffer();}
+        istringstream &strm(){return tkin.strm;}
     protected:
         token_stream tkin;/** token_stream data*/
     private:

@@ -18,10 +18,11 @@
 namespace preprocessor{
 
     string storage; /**buffer string*/
+    int storage_len;
 
     void pre_read(){/**reads a line from cin into storage*/
         getline(cin,storage);
-        storage += '\n';
+       // storage += '\n';
     }
 
     int replace_str(string &storage,const char*pattern, const char* new_pattern){
@@ -50,8 +51,9 @@ namespace preprocessor{
 
         /** replace ";" into EOL */
         replace_str(storage,";;",";");
-        int     x = replace_str(storage,";","\n")+1;//how many sub-lines
-        //replace_str(storage," \n","\n");
+        int     x = replace_str(storage,";","\n\n")+1;//how many sub-lines
+        replace_str(storage," \n\n\n","\n\n");
+        replace_str(storage,";\n","\n");
         replace_str(storage,"\n\n","\n");//fixes mutiple ';' together
         char b[10]={0};
         //-----------------
@@ -69,8 +71,9 @@ namespace preprocessor{
         replace_shift_opr('P',"_P_");
         replace_shift_opr('L',"_L_");
         replace_shift_opr('G',"_G_");
-        pre_push();/**push back to cin*/
+        //pre_push();/**push back to cin*/
 
+        storage_len = storage.size();
         //for(int i=0;i<storage.size();++i)cerr<<(int)storage[i]<<' '<<endl;
 
         return x;/** return the number of sub-lines */
