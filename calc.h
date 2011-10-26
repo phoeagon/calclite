@@ -20,6 +20,7 @@
 #include <cmath>
 using namespace std;
 
+const string app_name = "CalcLight";
 
 typedef pair<int,double> token_type;
 

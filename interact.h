@@ -1,6 +1,6 @@
 #ifndef INTERACT
 int     print_welcome(){
-    cout<<"this is a calculator by phoeagon"<<endl;
+    cout<<app_name<<" is a calculator by phoeagon < (c) 2011 all rights reserved >"<<endl;
     cout<<" enter '?' for help, '#' to exit "<<endl;
 }
 int     print_help(){
@@ -16,7 +16,7 @@ int     print_help(){
     cout<<"[system variable: _pi, _e, _phi ]\n//you can edit them but it's not recommended!\n";
     cout<<"[environment variable: _debug, _warning] either 0 or 1\n";
     cout<<"Priority & associativity:\n   (low) =[R], |& ^^ [L] , >< == >= <=[L], +-@~[L], \n\t\t"
-    "*/%[L], (unary)+-[R], ^[R] , (unary)![L] , ()[][L] (High) \n";
+    "*/% _C_ _G_ _P_ _L_[L], (unary)+-[R], ^[R] , (unary)![L] , ()[][L] (High) \n";
     cout<<" [set precision:] _precision : 5\n";
     cout<<"\t[ boolean values are returned as 1 or 0]";
     cout<<"[to exit] '#' "<<endl;

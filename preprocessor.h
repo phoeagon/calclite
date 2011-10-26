@@ -34,9 +34,8 @@ namespace preprocessor{
 
         /** replace ";" into EOL */
         replace_str(storage,";;",";");
-        int     x = replace_str(storage,";","\n\n")+1;//how many sub-lines
-        replace_str(storage,"\n\n\n","\n\n");//fixes ';' at EOL
-
+        int     x = replace_str(storage,";","\n")+1;//how many sub-lines
+        replace_str(storage,"\n\n","\n");//fixes mutiple ';' together
         char b[10]={0};
         //-----------------
         /**replacing operators from human-styled to single-chared*/

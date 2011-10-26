@@ -23,9 +23,9 @@ int main(){
     instance.set_var_strict_level( 1 );
     while (1){
         cout<<"> "<<flush;
-        int x = preprocessor::pre_proc();
+        int line_ct = preprocessor::pre_proc();
 
-        while (x--){
+        while ( line_ct-- ){
             try{
                     int x = instance.precision();
                     //cout<<"> "<<flush;

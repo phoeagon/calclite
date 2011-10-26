@@ -45,6 +45,8 @@ static const int _func_sign = 22;
 static const int _func_signpow = 23;
 static const int _func_invert = 24;
 static const int _func_abs = 25;
+static const int _func_round = 26;
+
 
 int   functions ::    isfunction( string s ){
     function_cast_it data = fs.find(s) ;
@@ -85,6 +87,7 @@ void    functions ::    init_system_func(){
     add_func(signpow);
     add_func(invert);
     add_func(abs);
+    add_func(round);
 }
 //std::transform(ttt.begin(),ttt.end(),x);
 
@@ -114,6 +117,7 @@ double  functions :: get_result(int opr,double x){
         case _func_signpow: return  pow(-1,x);
         case _func_invert:  return (1/x);
         case _func_abs:     return abs(x);
+        case _func_round:   return round(x);
         default:break;
     }
 }

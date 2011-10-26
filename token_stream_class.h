@@ -67,7 +67,7 @@ class token_stream{
             if ( x == 13 || x == 10 )
                 break;
             //if (cin>>x){}else throw bad_input();
-            if ( isdigit( x ) ){
+            if ( isdigit( x ) || x=='.'){
                 cin.putback( x );
                 if ( !( cin >> double_tmp ) )
                     throw bad_input();
