@@ -122,9 +122,9 @@ double  functions :: get_result(int opr,double x){
         case _func_tanh :	return  tanh(x);
         case _func_sign :   return  equal(x,0) ? 0 : ( (x>0) - (x<0) );
         case _func_signpow: return  pow(-1,x);
-        case _func_invert:  return (1/x);
-        case _func_abs:     return abs(x);
-        case _func_round:   return round(x);
+        case _func_invert:  return  (1/x);
+        case _func_abs:     return  abs(x);
+        case _func_round:   return  round(x);
         default:break;
     }
 }

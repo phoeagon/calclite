@@ -127,7 +127,7 @@ class token_stream{
                 }
             }
 		}
-
+        dispose_space();
         r2l_pos = l2r.size()-1;
         #ifdef _DEBUG
             if ( debug() )print_l2r();
