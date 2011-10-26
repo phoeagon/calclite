@@ -24,7 +24,6 @@ class   variables{
         int     add_var(string,double,int);
         void    del_var(string);
         double  eval_var(string ind , double val);/**evaluate a variable by name*/
-        const   string  cin_get_var_name();         /**read variable names from std::cin*/
 
 
         /** constructor */
@@ -80,25 +79,7 @@ double variables :: eval_var(string ind , double val){/**evaluate variable by na
         throw no_such_var();
     return memory.at((*pos).second) = val;
 }
-const string variables :: cin_get_var_name(){/**read variable name from std::cin*/
-    string value ;
-    char x = cin.peek();
-    if ( isalpha(x) || x=='_' ){
-        dispose_space();
-        while( cin ){
-            x=cin.get();
-            if (isdigit(x) || isalpha(x) || x=='_')
-                value += x;
-            else {
-                cin.putback(x);
-                break;
-            }
-        }
-    }
-    if ( value.size() )
-        return value;
-    else throw bad_input();
-}
+
 
 void variables :: init_system_var   (int quiet = 0){
     try{
